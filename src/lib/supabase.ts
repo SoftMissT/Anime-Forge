@@ -9,7 +9,10 @@ if (!supabaseUrl || !supabaseAnonKey) {
   console.warn('Supabase URL or Anon Key missing. Check your .env file.');
 }
 
+// Ensure we don't crash if keys are missing. 
+// If url is invalid, createClient throws. 
+// We provide a fallback or ensure we only create if valid.
 export const supabase = createClient(
-  supabaseUrl || '',
-  supabaseAnonKey || ''
+  supabaseUrl || 'https://placeholder.supabase.co',
+  supabaseAnonKey || 'placeholder'
 );
