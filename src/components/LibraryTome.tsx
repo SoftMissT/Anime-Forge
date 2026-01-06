@@ -1,16 +1,13 @@
-
-
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useForge, useAppCore, useAuth } from '../contexts/AppContext';
-import type { GeneratedItem, HistoryItem, FavoriteItem, AppView, MasterToolHistoryItem, Category } from '../types';
+import type { GeneratedItem, FavoriteItem, AppView, MasterToolHistoryItem, Category } from '../types';
 import { VirtualizedList } from './ui/VirtualizedList';
 import { ForgeIcon, StarIcon, HistoryIcon, BookIcon, TrashIcon, DownloadIcon, BrainIcon } from './icons';
 import { useToast } from './ToastProvider';
 import { analytics } from '../lib/analytics';
 import { Button } from './ui/Button';
 import { SearchableSelect } from './ui/SearchableSelect';
-import { exportDataToGoogleDocs } from '../lib/client/exportService';
 import { TABS_DATA } from '../lib/tabsData';
 import { fetchMasterToolsHistory, clearMasterToolsHistory } from '../lib/client/orchestrationService';
 import { Spinner } from './ui/Spinner';
@@ -103,7 +100,7 @@ const categoryFilterOptions = [
 ];
 
 export const LibraryTome: React.FC<LibraryTomeProps> = ({ isOpen, onClose, initialState }) => {
-    const { history, favorites, setFavorites, setSelectedItem, clearHistory } = useForge();
+    const { history, favorites, toggleFavorite, setSelectedItem, clearHistory } = useForge();
     const { activeView: currentAppView, changeView } = useAppCore();
     const { user } = useAuth();
     const { showToast } = useToast();
@@ -122,7 +119,6 @@ export const LibraryTome: React.FC<LibraryTomeProps> = ({ isOpen, onClose, initi
             setActiveTab(initialState.tab);
             if (isMasterToolsView && user) {
                 setIsLoadingMasterHistory(true);
-                // FIX: Removed the `user` argument. The API endpoint handles user authentication via session cookies.
                 fetchMasterToolsHistory()
                     .then(data => setMasterHistory(data))
                     .catch(err => showToast('error', 'Falha ao carregar histórico do mestre.'))
@@ -135,11 +131,10 @@ export const LibraryTome: React.FC<LibraryTomeProps> = ({ isOpen, onClose, initi
 
     const handleToggleFavorite = useCallback((item: FavoriteItem) => {
         const isCurrentlyFavorite = favoriteIds.has(item.id);
-        
-        setFavorites(prev => isCurrentlyFavorite ? prev.filter(fav => fav.id !== item.id) : [item, ...prev]);
+        toggleFavorite(item);
         showToast(isCurrentlyFavorite ? 'info' : 'success', isCurrentlyFavorite ? 'Removido dos favoritos.' : 'Adicionado aos favoritos!');
         analytics.trackFavorite(item.categoria, isCurrentlyFavorite ? 'remove' : 'add');
-    }, [setFavorites, showToast, favoriteIds]);
+    }, [toggleFavorite, showToast, favoriteIds]);
     
     const handleSelect = (item: GeneratedItem) => {
         onClose();
@@ -157,7 +152,6 @@ export const LibraryTome: React.FC<LibraryTomeProps> = ({ isOpen, onClose, initi
         if (isMasterToolsView) {
             if (window.confirm('Tem certeza de que deseja limpar todo o histórico da Ferramenta do Mestre?')) {
                 if (!user) return;
-                // FIX: Removed the `user` argument. The API endpoint handles user authentication via session cookies.
                 clearMasterToolsHistory()
                     .then(() => {
                         setMasterHistory([]);
@@ -174,17 +168,7 @@ export const LibraryTome: React.FC<LibraryTomeProps> = ({ isOpen, onClose, initi
     };
     
     const handleExportDocs = async () => {
-        if (!user) { showToast('error', 'Você precisa estar logado para exportar.'); return; }
-        setIsExporting('docs');
-        try {
-            const result = await exportDataToGoogleDocs(history, favorites, user);
-            showToast('success', 'Documento criado! Abrindo em nova aba...');
-            window.open(result.url, '_blank');
-        } catch (error: any) {
-            showToast('error', `Falha ao criar Google Doc: ${error.message}`);
-        } finally {
-            setIsExporting(false);
-        }
+        showToast('info', 'Exportação para Google Docs desativada (Migração para Supabase em progresso).');
     };
 
     const currentForgeItems: GeneratedItem[] = useMemo(() => {
@@ -334,13 +318,11 @@ export const LibraryTome: React.FC<LibraryTomeProps> = ({ isOpen, onClose, initi
                             </AnimatePresence>
                         </main>
                         <footer className="p-2 border-t border-gray-800 flex-shrink-0 flex justify-end gap-2">
-                            {user && !isMasterToolsView && (
-                                <>
-                                    <Button variant="secondary" onClick={handleExportDocs} disabled={!!isExporting}>
-                                        {isExporting === 'docs' ? <Spinner size="sm"/> : <DownloadIcon className="w-4 h-4" />}
-                                        {isExporting === 'docs' ? 'Criando Doc...' : 'Exportar para Google Docs'}
-                                    </Button>
-                                </>
+                             {user && !isMasterToolsView && (
+                                <Button variant="secondary" onClick={handleExportDocs} disabled={true}>
+                                    <DownloadIcon className="w-4 h-4" />
+                                    Exportação Desativada
+                                </Button>
                             )}
                         </footer>
                     </motion.div>

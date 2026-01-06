@@ -1,22 +1,14 @@
 // lib/supabase.ts
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
 
-let supabase: SupabaseClient | null = null;
-let supabaseInitializationError: string | null = null;
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY;
-
-if (!supabaseUrl || !supabaseServiceKey) {
-  supabaseInitializationError = 'As variáveis de ambiente do Supabase (SUPABASE_URL, SUPABASE_SERVICE_KEY) não estão configuradas.';
-  console.error('Erro ao inicializar Supabase Client:', supabaseInitializationError);
-} else {
-  supabase = createClient(supabaseUrl, supabaseServiceKey, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  });
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.warn('Supabase URL or Anon Key missing. Check your .env file.');
 }
 
-export { supabase, supabaseInitializationError };
+export const supabase = createClient(
+  supabaseUrl || '',
+  supabaseAnonKey || ''
+);

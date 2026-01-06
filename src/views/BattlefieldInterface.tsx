@@ -1,6 +1,6 @@
 // src/views/BattlefieldInterface.tsx
 import React, { useState, useCallback } from 'react';
-import { useAppCore, useAuth } from '../contexts/AppContext';
+import { useAppCore, useAuth, useApiKeys } from '../contexts/AppContext';
 import { orchestrateGeneration } from '../lib/client/orchestrationService';
 import type { FilterState, ClanWarsResult, GeneratedItem } from '../types';
 import { v4 as uuidv4 } from 'uuid';
@@ -31,6 +31,7 @@ export const BattlefieldInterface: React.FC = () => {
     const [result, setResult] = useState<ClanWarsResult | null>(null);
     const { loadingState, setLoadingState, setAppError } = useAppCore();
     const { isAuthenticated, handleLoginClick, user } = useAuth();
+    const { geminiApiKey, openaiApiKey, deepseekApiKey } = useApiKeys();
     
     const isMobile = useMediaQuery('(max-width: 1024px)');
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
@@ -65,7 +66,11 @@ export const BattlefieldInterface: React.FC = () => {
         };
 
         try {
-            const rawResult = await orchestrateGeneration(apiFilters, filters.promptModifier);
+            const rawResult = await orchestrateGeneration(
+                apiFilters, 
+                filters.promptModifier,
+                 { gemini: geminiApiKey, openai: openaiApiKey, deepseek: deepseekApiKey }
+            );
             const battleResult: ClanWarsResult = {
                 id: uuidv4(),
                 createdAt: new Date().toISOString(),

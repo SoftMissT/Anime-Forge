@@ -10,7 +10,10 @@ import OpenAI from 'openai';
 export const getOpenAiClient = (clientApiKey?: string): OpenAI | null => {
     // Use client key exclusively.
     if (clientApiKey) {
-        return new OpenAI({ apiKey: clientApiKey });
+        return new OpenAI({ 
+            apiKey: clientApiKey,
+            dangerouslyAllowBrowser: true
+        });
     }
     
     console.warn("Nenhuma chave de API da OpenAI foi fornecida. O refinamento com GPT será ignorado.");
