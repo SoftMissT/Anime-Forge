@@ -150,3 +150,32 @@ export const clearMasterToolsHistory = async (): Promise<void> => {
     });
     return handleApiResponse(response);
 };
+// Update Creation
+export const updateCreation = async (id: string, updateData: Partial<GeneratedItem>): Promise<void> => {
+    const response = await fetch(`${API_BASE}/creations/${id}`, {
+        method: 'PATCH',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(updateData),
+    });
+    return handleApiResponse(response);
+};
+
+// Generate and Assign Image
+export const generateAndAssignImage = async (params: Omit<GenerateImageRequest, 'user'>): Promise<{ imageUrl: string; updatedItem: GeneratedItem }> => {
+    const response = await fetch(`${API_BASE}/generate-and-assign-image`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(params),
+    });
+    return handleApiResponse(response);
+};
+
+// Refine Prompt with DeepSeek
+export const refinePromptWithDeepSeek = async (prompt: string): Promise<{ refinedPrompt: string }> => {
+    const response = await fetch(`${API_BASE}/refine-prompt`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ prompt }),
+    });
+    return handleApiResponse(response);
+};

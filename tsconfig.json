@@ -20,5 +20,15 @@
     }
   },
   "include": ["src"],
+  "exclude": [
+    "src/lib/cloudinary.ts",
+    "src/lib/firebase.ts",
+    "src/lib/imagekit.ts",
+    "src/lib/openai.ts",
+    "src/lib/openrouter.ts",
+    "src/lib/session.ts",
+    "src/lib/server/**/*",
+    "pages/**/*"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

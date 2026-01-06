@@ -28,8 +28,8 @@ export async function generateImageFromPrompt(prompt: string): Promise<ImageResu
         );
 
         if (imagePart && imagePart.inlineData) {
-            const base64ImageBytes: string = imagePart.inlineData.data;
-            const mimeType: string = imagePart.inlineData.mimeType;
+            const base64ImageBytes: string = imagePart.inlineData.data as string;
+            const mimeType: string = imagePart.inlineData.mimeType as string;
             const imageUrl = `data:${mimeType};base64,${base64ImageBytes}`;
             return { imageUrl, mimeType };
         } else {
@@ -68,8 +68,8 @@ export async function editImage({ prompt, base64ImageData, mimeType }: EditImage
         );
         
         if (imagePart && imagePart.inlineData) {
-            const base64ImageBytes: string = imagePart.inlineData.data;
-            const newMimeType: string = imagePart.inlineData.mimeType;
+            const base64ImageBytes: string = imagePart.inlineData.data as string;
+            const newMimeType: string = imagePart.inlineData.mimeType as string;
             const imageUrl = `data:${newMimeType};base64,${base64ImageBytes}`;
             return { imageUrl, mimeType: newMimeType };
         } else {
