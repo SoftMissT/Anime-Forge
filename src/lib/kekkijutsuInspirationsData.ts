@@ -1,0 +1,16 @@
+export const KEKKIJUTSU_INSPIRATIONS_DATA = [
+    { value: 'Sangue', label: 'Sangue' },
+    { value: 'Ossos', label: 'Ossos' },
+    { value: 'Sombras', label: 'Sombras' },
+    { value: 'Fogo Infernal', label: 'Fogo Infernal' },
+    { value: 'Gelo Eterno', label: 'Gelo Eterno' },
+    { value: 'Eletricidade Negra', label: 'Eletricidade Negra' },
+    { value: 'Plantas Carnívoras', label: 'Plantas Carnívoras' },
+    { value: 'Ilusões', label: 'Ilusões' },
+    { value: 'Manipulação Espacial', label: 'Manipulação Espacial' },
+    { value: 'Corrupção/Decadência', label: 'Corrupção/Decadência' },
+    { value: 'Som/Vibrações', label: 'Som/Vibrações' },
+    { value: 'Gravidade', label: 'Gravidade' },
+    { value: 'Fios/Marionetes', label: 'Fios/Marionetes' },
+    { value: 'Marionetes de Sangue', label: 'Marionetes de Sangue' },
+];

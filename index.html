@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Kimetsu Forge - Gerador de RPG para Demon Slayer</title>
+
+    <!-- Otimizações de Carregamento -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://i.imgur.com" />
+    <link rel="preload" href="/src/styles/globals.css" as="style" />
+    <link rel="preload" href="https://i.imgur.com/M9BDKmO.png" as="image" />
+    <!-- Preload das primeiras imagens do carrossel para LCP -->
+    <link
+      rel="preload"
+      href="https://i.imgur.com/hJxdJ79.jpg"
+      as="image"
+      fetchpriority="high"
+    />
+    <link rel="preload" href="https://i.imgur.com/neCtaaD.jpg" as="image" />
+
+    <!-- SEO Básico -->
+    <meta
+      name="description"
+      content="Gerador de conteúdo RPG para Demon Slayer: armas, personagens, Onis, técnicas e mais. Forja lendas para suas campanhas de mesa."
+    />
+    <meta
+      name="keywords"
+      content="demon slayer, rpg, gerador, kimetsu no yaiba, mesa, ttrpg, ai"
+    />
+    <meta name="author" content="SoftMissT & Mathzin" />
+    <link rel="canonical" href="https://demon-slayer-gerador.vercel.app" />
+
+    <!-- Open Graph - Facebook/WhatsApp -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://demon-slayer-gerador.vercel.app" />
+    <meta
+      property="og:title"
+      content="Kimetsu Forge - Gerador de RPG para Demon Slayer"
+    />
+    <meta
+      property="og:description"
+      content="Crie armas lendárias, Onis épicos e personagens únicos para suas campanhas de Demon Slayer com IA."
+    />
+    <meta property="og:image" content="https://i.imgur.com/M9BDKmO.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:url"
+      content="https://demon-slayer-gerador.vercel.app"
+    />
+    <meta name="twitter:title" content="Kimetsu Forge - Gerador de RPG" />
+    <meta
+      name="twitter:description"
+      content="Forje lendas para suas campanhas de Demon Slayer"
+    />
+    <meta name="twitter:image" content="https://i.imgur.com/M9BDKmO.png" />
+
+    <!-- Favicon Melhorado -->
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="https://i.imgur.com/M9BDKmO.png"
+    />
+    <link rel="apple-touch-icon" href="https://i.imgur.com/M9BDKmO.png" />
+
+    <!-- PWA & Mobile -->
+    <meta name="theme-color" content="#8b5cf6" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=5"
+    />
+    <script type="importmap">
+      {
+        "imports": {
+          "react": "https://aistudiocdn.com/react@^19.2.0",
+          "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+          "react/": "https://aistudiocdn.com/react@^19.2.0/",
+          "framer-motion": "https://aistudiocdn.com/framer-motion@^12.23.24",
+          "vite": "https://aistudiocdn.com/vite@^7.2.2",
+          "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.1.1",
+          "path": "https://aistudiocdn.com/path@^0.12.7",
+          "url": "https://aistudiocdn.com/url@^0.11.4",
+          "@supabase/supabase-js": "https://aistudiocdn.com/@supabase/supabase-js@^2.81.1",
+          "@libsql/client": "https://aistudiocdn.com/@libsql/client@^0.15.15",
+          "cloudinary": "https://aistudiocdn.com/cloudinary@^2.8.0",
+          "imagekit": "https://aistudiocdn.com/imagekit@^6.0.0",
+          "firebase-admin": "https://aistudiocdn.com/firebase-admin@^13.6.0",
+          "googleapis": "https://aistudiocdn.com/googleapis@^166.0.0",
+          "@google/genai": "https://aistudiocdn.com/@google/genai@^1.29.1",
+          "iron-session": "https://aistudiocdn.com/iron-session@^8.0.4",
+          "next": "https://aistudiocdn.com/next@^16.0.3",
+          "buffer": "https://aistudiocdn.com/buffer@^6.0.3",
+          "crypto": "https://aistudiocdn.com/crypto@^1.0.1",
+          "iron-session/": "https://aistudiocdn.com/iron-session@^8.0.4/",
+          "uuid": "https://aistudiocdn.com/uuid@^13.0.0",
+          "next/": "https://aistudiocdn.com/next@^16.0.3/",
+          "@vercel/analytics/": "https://aistudiocdn.com/@vercel/analytics@^1.5.0/",
+          "@vercel/speed-insights/": "https://aistudiocdn.com/@vercel/speed-insights@^1.2.0/",
+          "openai": "https://aistudiocdn.com/openai@^6.9.0",
+          "canvas-confetti": "https://aistudiocdn.com/canvas-confetti@^1.9.4",
+          "firebase/": "https://aistudiocdn.com/firebase@^12.6.0/"
+        }
+      }
+    </script>
+    <link rel="stylesheet" href="/index.css" />
+  </head>
+  <body>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
