@@ -10,7 +10,7 @@ import { GptIcon } from './icons/GptIcon';
 import { GeminiIcon } from './icons/GeminiIcon';
 import { useToast } from './ToastProvider';
 import { refinePromptWithDeepSeek } from '../lib/client/orchestrationService';
-import { useAuth } from '../contexts/AppContext';
+import { useAuth, useApiKeys } from '../contexts/AppContext';
 
 interface PromptCardProps {
     model: 'midjourney' | 'gpt' | 'gemini';
@@ -23,7 +23,8 @@ export const PromptCard: React.FC<PromptCardProps> = ({ model, prompt, onPromptC
     const [isRefining, setIsRefining] = useState(false);
     const { showToast } = useToast();
     const { user } = useAuth();
-    const hasDeepSeekAccess = !!user;
+    const { deepseekApiKey } = useApiKeys();
+    const hasDeepSeekAccess = !!deepseekApiKey;
 
     const modelConfig = {
         midjourney: {
@@ -72,7 +73,7 @@ export const PromptCard: React.FC<PromptCardProps> = ({ model, prompt, onPromptC
 
         setIsRefining(true);
         try {
-            const result = await refinePromptWithDeepSeek(prompt);
+            const result = await refinePromptWithDeepSeek(prompt, { deepseek: deepseekApiKey });
             if (result.refinedPrompt) {
                 onPromptChange(result.refinedPrompt);
                 showToast('success', 'Prompt refinado com DeepSeek!');

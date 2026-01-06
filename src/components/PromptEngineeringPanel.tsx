@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 // FIX: Add useAlchemy import
-import { useAlchemy, useAppCore, useAuth } from '../contexts/AppContext';
+import { useAlchemy, useAppCore, useAuth, useApiKeys } from '../contexts/AppContext';
 // FIX: Add generatePrompts import
 import { generatePrompts } from '../lib/client/orchestrationService';
 import { AuthOverlay } from './AuthOverlay';
@@ -32,6 +32,7 @@ export const PromptEngineeringPanel: React.FC = () => {
     
     const { loadingState, setLoadingState, setAppError } = useAppCore();
     const { isAuthenticated, user, handleLoginClick } = useAuth();
+    const { geminiApiKey, openaiApiKey, deepseekApiKey } = useApiKeys();
     
     const isMobile = useMediaQuery('(max-width: 1024px)');
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
@@ -80,7 +81,7 @@ export const PromptEngineeringPanel: React.FC = () => {
                 generateGpt: generateFor.gpt,
                 generateGemini: generateFor.gemini,
                 user, // Pass the user object
-            });
+            }, { gemini: geminiApiKey, openai: openaiApiKey, deepseek: deepseekApiKey });
             setResults(resultData);
             
             const newHistoryItem: AlchemyHistoryItem = {
