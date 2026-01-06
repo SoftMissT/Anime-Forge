@@ -47,8 +47,7 @@ export const callDeepSeekAPI = async (messages: DeepSeekMessage[], clientApiKey?
     }
     
     // The response might be inside a JSON block or just raw JSON
-    const jsonMatch = content.match(/```json\n([\s\S]*?)\n```|({[\s\S]*})/s);
-    if (jsonMatch && (jsonMatch[1] || jsonMatch[2])) {
+const jsonMatch = content.match(/```json\n([\s\S]*?)\n```|({[\s\S]*})/);    if (jsonMatch && (jsonMatch[1] || jsonMatch[2])) {
         try {
             return JSON.parse(jsonMatch[1] || jsonMatch[2]);
         } catch (e) {
