@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 // lib/supabase.ts
 import { createClient } from '@supabase/supabase-js';
 
