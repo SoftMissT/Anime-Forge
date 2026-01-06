@@ -9,9 +9,19 @@ import {
   UsageProvider,
   AlchemyProvider,
   useForge,
+  ConflictsProvider,
+  CharactersProvider,
+  TechniquesProvider,
+  LocationsProvider,
+  MasterToolsProvider,
+  CosmakerProvider,
+  FilmmakerProvider,
 } from './contexts/AppContext';
 import { ToastProvider } from './components/ToastProvider';
 import { Header } from './components/Header';
+import { ForgeInterface } from './views/ForgeInterface';
+import { ClanWarsInterface } from './views/ClanWarsInterface';
+import { MasterToolsInterface } from './views/MasterToolsInterface';
 import { AboutModal } from './components/AboutModal';
 import { HowItWorksModal } from './components/HowItWorksModal';
 import { ApiKeysModal } from './components/ApiKeysModal';
@@ -22,17 +32,9 @@ import ErrorBoundary from './components/ErrorBoundary';
 import { TABS_DATA } from './lib/tabsData';
 import { LibraryTome } from './components/LibraryTome';
 import { DetailModal } from './components/DetailModal';
-
-// Importando as 9 interfaces da nova estrutura de views
-import { BattlefieldInterface } from './views/BattlefieldInterface';
-import { WorkshopInterface } from './views/WorkshopInterface';
-import { ShinobuLabInterface } from './views/ShinobuLabInterface';
-import { PainterAtelierInterface } from './views/PainterAtelierInterface';
-import { ProjectionRoomInterface } from './views/ProjectionRoomInterface';
-import { OyakataRoomInterface } from './views/OyakataRoomInterface';
-import { CartographerAtlasInterface } from './views/CartographerAtlasInterface';
-import { HuntersRegistryInterface } from './views/HuntersRegistryInterface';
-import { StylesGrimoireInterface } from './views/StylesGrimoireInterface';
+import { PromptEngineeringPanel } from './views/PromptEngineeringPanel';
+import { CosmakerInterface } from './views/CosmakerInterface';
+import { FilmmakerInterface } from './views/FilmmakerInterface';
 
 
 const AppContent = () => {
@@ -78,16 +80,35 @@ const AppContent = () => {
     const effectiveView = tabConfig ? activeView : 'forge';
 
     switch (effectiveView) {
-        case 'conflicts': return <BattlefieldInterface />;
-        case 'forge': return <WorkshopInterface />;
-        case 'alchemist': return <ShinobuLabInterface />;
-        case 'cosmaker': return <PainterAtelierInterface />;
-        case 'filmmaker': return <ProjectionRoomInterface />;
-        case 'master_tools': return <OyakataRoomInterface />;
-        case 'locations': return <CartographerAtlasInterface />;
-        case 'characters': return <HuntersRegistryInterface />;
-        case 'techniques': return <StylesGrimoireInterface />;
-        default: return <WorkshopInterface />;
+        case 'conflicts':
+            return <ClanWarsInterface />;
+        case 'master_tools':
+            return <MasterToolsInterface />;
+        case 'alchemist':
+            return <PromptEngineeringPanel />;
+        case 'cosmaker':
+            return <CosmakerInterface />;
+        case 'filmmaker':
+            return <FilmmakerInterface />;
+        case 'forge':
+        case 'characters':
+        case 'unclassified':
+        case 'techniques':
+        case 'locations':
+            const initialCategory = tabConfig?.defaultCategory || 'Arma';
+            const allowedCategories = tabConfig?.allowedCategories;
+            return <ForgeInterface 
+                        key={effectiveView} 
+                        initialCategory={initialCategory} 
+                        allowedCategories={allowedCategories}
+                    />;
+        default:
+             const fallbackConfig = TABS_DATA.find(t => t.id === 'forge');
+            return <ForgeInterface 
+                        key="forge-fallback" 
+                        initialCategory={fallbackConfig?.defaultCategory || 'Arma'} 
+                        allowedCategories={fallbackConfig?.allowedCategories} 
+                    />;
     }
   };
 
@@ -149,9 +170,23 @@ const App = () => {
           <ApiKeysProvider>
             <UsageProvider>
               <AlchemyProvider>
-                <ForgeProvider>
-                    <AppContent />
-                </ForgeProvider>
+                <ConflictsProvider>
+                  <CharactersProvider>
+                    <TechniquesProvider>
+                      <LocationsProvider>
+                        <MasterToolsProvider>
+                          <CosmakerProvider>
+                            <FilmmakerProvider>
+                              <ForgeProvider>
+                                  <AppContent />
+                              </ForgeProvider>
+                            </FilmmakerProvider>
+                          </CosmakerProvider>
+                        </MasterToolsProvider>
+                      </LocationsProvider>
+                    </TechniquesProvider>
+                  </CharactersProvider>
+                </ConflictsProvider>
               </AlchemyProvider>
             </UsageProvider>
           </ApiKeysProvider>

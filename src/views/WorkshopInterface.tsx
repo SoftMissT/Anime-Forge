@@ -1,5 +1,6 @@
+// src/views/WorkshopInterface.tsx
 import React, { useState, useCallback, useEffect } from 'react';
-import { useForge, useAppCore, useAuth, useApiKeys } from '../contexts/AppContext';
+import { useForge, useAppCore, useAuth } from '../contexts/AppContext';
 import { orchestrateGeneration } from '../lib/client/orchestrationService';
 import { FilterPanel } from '../components/FilterPanel';
 import { ResultsPanel } from '../components/ResultsPanel';
@@ -22,15 +23,11 @@ export const WorkshopInterface: React.FC<WorkshopInterfaceProps> = ({
     allowedCategories = ['Arma', 'Acessório'] 
 }) => {
     const {
-        filters, handleFilterChange, resetFilters, history, addToHistory, deleteHistoryItem,
+        filters, handleFilterChange, resetFilters, history, addHistoryItem, deleteHistoryItem,
         clearHistory, favorites, toggleFavorite, selectedItem, setSelectedItem,
     } = useForge();
     const { loadingState, setLoadingState, setAppError } = useAppCore();
     const { isAuthenticated, handleLoginClick, user } = useAuth();
-    
-    // Hooks should be unconditional
-    const apiKeys = useApiKeys();
-    const { geminiApiKey, openaiApiKey, deepseekApiKey } = apiKeys; 
     
     const isMobile = useMediaQuery('(max-width: 1024px)');
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
@@ -50,13 +47,9 @@ export const WorkshopInterface: React.FC<WorkshopInterfaceProps> = ({
         const startTime = Date.now();
         
         try {
-            const newItem = await orchestrateGeneration(
-                filters, 
-                filters.promptModifier,
-                 { gemini: geminiApiKey, openai: openaiApiKey, deepseek: deepseekApiKey }
-            );
+            const newItem = await orchestrateGeneration(filters, filters.promptModifier);
 
-            addToHistory(newItem);
+            addHistoryItem(newItem);
             setSelectedItem(newItem);
             
             if (newItem._validation?.warnings?.length) {
@@ -75,7 +68,7 @@ export const WorkshopInterface: React.FC<WorkshopInterfaceProps> = ({
         } finally {
             setLoadingState({ active: false });
         }
-    }, [filters, user, addToHistory, setSelectedItem, setLoadingState, setAppError]);
+    }, [filters, user, addHistoryItem, setSelectedItem, setLoadingState, setAppError]);
     
     const handleSelect = useCallback((item: GeneratedItem) => {
         setSelectedItem(item);

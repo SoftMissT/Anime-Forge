@@ -180,7 +180,7 @@ export type HistoryItem = GeneratedItem;
 export type FavoriteItem = GeneratedItem;
 
 // App Core UI types
-export type AppView = 'forge' | 'characters' | 'techniques' | 'locations' | 'conflicts' | 'master_tools' | 'alchemist' | 'cosmaker' | 'filmmaker';
+export type AppView = 'forge' | 'characters' | 'techniques' | 'locations' | 'conflicts' | 'master_tools' | 'alchemist' | 'cosmaker' | 'filmmaker' | 'unclassified';
 export type View = AppView;
 
 export interface AppError {

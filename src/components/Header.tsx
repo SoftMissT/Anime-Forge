@@ -51,7 +51,7 @@ export const Header = memo(({
     onOpenHowItWorks,
 }: HeaderProps) => {
     const { activeView, openApiKeysModal, openLibraryTome } = useAppCore();
-    const { user, handleLoginClick, logout: handleLogout } = useAuth();
+    const { user, handleLoginClick, handleLogout } = useAuth();
     const { resetTimestamp } = useUsage();
     const { geminiApiKey } = useApiKeys();
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);

@@ -29,9 +29,39 @@ const createExportPayload = (history: HistoryItem[], favorites: FavoriteItem[]) 
 };
 
 export const exportDataToFirebase = async (history: HistoryItem[], favorites: FavoriteItem[], user: User) => {
-    // Requires migration to Supabase or removal
-    console.warn("exportDataToFirebase is disabled/pending migration.");
-    return { success: false, message: "Disabled" };
+    const exportData = createExportPayload(history, favorites);
+
+    const response = await fetch('/api/export', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-User': JSON.stringify(user),
+        },
+        body: JSON.stringify({ exportData }),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Falha ao enviar exportação para o servidor.');
+    }
+
+    return await response.json();
 };
 
-// Removed exportDataToGoogleDocs as requested.
+export const exportDataToGoogleDocs = async (history: HistoryItem[], favorites: FavoriteItem[], user: User) => {
+    const response = await fetch('/api/exportToGoogleDocs', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-User': JSON.stringify(user),
+        },
+        body: JSON.stringify({ history, favorites }),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Falha ao exportar para o Google Docs.');
+    }
+
+    return await response.json();
+};

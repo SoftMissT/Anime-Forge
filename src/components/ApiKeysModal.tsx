@@ -44,14 +44,25 @@ export const ApiKeysModal: React.FC<ApiKeysModalProps> = ({ isOpen, onClose }) =
     
     setIsSaving(true);
     try {
-      // Setters now handle saving to Supabase internally via the Context
-      if (keysToSave.gemini !== geminiApiKey) setGeminiApiKey(keysToSave.gemini);
-      if (keysToSave.openai !== openaiApiKey) setOpenaiApiKey(keysToSave.openai);
-      if (keysToSave.deepseek !== deepseekApiKey) setDeepseekApiKey(keysToSave.deepseek);
+      const response = await fetch('/api/keys/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          geminiApiKey: keysToSave.gemini || null,
+          openaiApiKey: keysToSave.openai || null,
+          deepseekApiKey: keysToSave.deepseek || null,
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Falha ao salvar as chaves.');
+      }
       
-      // Simulate a small delay for better UX
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
+      setGeminiApiKey(keysToSave.gemini);
+      setOpenaiApiKey(keysToSave.openai);
+      setDeepseekApiKey(keysToSave.deepseek);
       return true;
     } catch (error: any) {
       showToast('error', `Erro: ${error.message}`);

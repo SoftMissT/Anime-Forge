@@ -1,18 +1,22 @@
-/// <reference types="vite/client" />
 // lib/supabase.ts
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+let supabase: SupabaseClient | null = null;
+let supabaseInitializationError: string | null = null;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('Supabase URL or Anon Key missing. Check your .env file.');
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY;
+
+if (!supabaseUrl || !supabaseServiceKey) {
+  supabaseInitializationError = 'As variáveis de ambiente do Supabase (SUPABASE_URL, SUPABASE_SERVICE_KEY) não estão configuradas.';
+  console.error('Erro ao inicializar Supabase Client:', supabaseInitializationError);
+} else {
+  supabase = createClient(supabaseUrl, supabaseServiceKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  });
 }
 
-// Ensure we don't crash if keys are missing. 
-// If url is invalid, createClient throws. 
-// We provide a fallback or ensure we only create if valid.
-export const supabase = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co',
-  supabaseAnonKey || 'placeholder'
-);
+export { supabase, supabaseInitializationError };

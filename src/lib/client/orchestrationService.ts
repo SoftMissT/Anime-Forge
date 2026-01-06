@@ -1,4 +1,4 @@
-// lib/client/orchestrationService.ts
+// src/lib/client/orchestrationService.ts
 import type {
   FilterState,
   GeneratedItem,
@@ -11,12 +11,11 @@ import type {
   VideoOperationStatus,
   GenerateImageRequest,
 } from '../../types';
-import { generateContentClient, ApiKeys } from './generationLogic';
-import { supabase } from '../supabase';
 
-const API_BASE = '/api';
+// A URL base para as suas Supabase Functions.
+// Configure esta variável de ambiente no seu Vercel.
+const API_BASE = import.meta.env.VITE_SUPABASE_FUNCTIONS_URL;
 
-// Helper to handle API responses and parse errors
 async function handleApiResponse(response: Response) {
     const data = await response.json();
     if (!response.ok) {
@@ -25,95 +24,129 @@ async function handleApiResponse(response: Response) {
     return data;
 }
 
+// Retorna os headers de autenticação necessários para as funções Supabase.
+const getAuthHeaders = () => {
+    const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+    // Em um cenário real, você usaria o token JWT da sessão do usuário Supabase.
+    // Para esta migração, estamos mantendo o fluxo de cookie personalizado.
+    return {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${supabaseAnonKey}`, // Chave anônima para invocar a função
+    };
+};
+
+
 export const orchestrateGeneration = async (
   filters: FilterState,
   promptModifier: string,
-  keys: ApiKeys
 ): Promise<GeneratedItem> => {
-  return generateContentClient(filters, promptModifier, keys);
+  const response = await fetch(`${API_BASE}/generate-content`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify({
+        view: 'forge', // A função agora pode ter uma lógica de switch baseada nisso
+        filters: { ...filters, promptModifier }
+    }),
+  });
+  return handleApiResponse(response);
 };
 
-export const analyzeFeat = async (description: string): Promise<MasterToolResult> => {
-    // TODO: Client-side AI Logic for Master Tools
-    throw new Error("Master Tool AI not yet implemented on client.");
-};
-
-// --- FUNÇÕES DE HISTÓRICO DA FERRAMENTA DO MESTRE ---
-export const fetchMasterToolsHistory = async (): Promise<MasterToolHistoryItem[]> => {
-    const { data } = await supabase.from('master_tool_history').select('*');
-    return (data as any) || [];
-};
-
-export const clearMasterToolsHistory = async (): Promise<{ message: string }> => {
-    await supabase.from('master_tool_history').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-    return { message: 'History cleared' };
-};
-
-
-// --- FUNÇÕES PARA PERSISTÊNCIA (FORJA) ---
 export const fetchCreations = async (): Promise<{ history: HistoryItem[], favorites: HistoryItem[] }> => {
-     // TODO: Load from Supabase
-    return { history: [], favorites: [] };
-};
-
-export const updateCreation = async (id: string, updateData: Partial<GeneratedItem>) => {
-    // TODO: Update in Supabase if persisted there
-    console.warn("updateCreation not fully implemented (state is local).");
-    return { success: true };
+    const response = await fetch(`${API_BASE}/creations`, {
+        method: 'GET',
+        headers: getAuthHeaders(),
+    });
+    return handleApiResponse(response);
 };
 
 export const updateCreationFavoriteStatus = async (item: HistoryItem, is_favorite: boolean) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-    
-    if (is_favorite) {
-         await supabase.from('favorites').upsert({
-            user_id: user.id,
-            item_id: item.id,
-            item_data: item,
-            created_at: new Date().toISOString()
-        });
-    } else {
-        await supabase.from('favorites').delete().eq('item_id', item.id).eq('user_id', user.id);
-    }
-    return { success: true };
+    const response = await fetch(`${API_BASE}/creations`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ item, is_favorite }),
+    });
+    return handleApiResponse(response);
 };
 
 export const deleteCreationById = async (id: string) => {
-    // TODO: Delete from Supabase
-    return { success: true };
+    const response = await fetch(`${API_BASE}/creations?id=${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+    });
+    return handleApiResponse(response);
 };
 
 export const clearAllCreationsForUser = async () => {
-    // TODO: Clear Supabase
-    return { success: true };
+    const response = await fetch(`${API_BASE}/creations?clearAll=true`, {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+    });
+    return handleApiResponse(response);
 };
 
-// --- ALCHEMY FUNCTIONS ---
-export const generatePrompts = async (params: any, keys: ApiKeys): Promise<PromptGenerationResult> => {
-     // TODO: Client logic
-     throw new Error("Alchemy not implemented.");
-};
 
-export const refinePromptWithDeepSeek = async (prompt: string, keys: ApiKeys): Promise<{ refinedPrompt?: string }> => {
-    // TODO: Client logic
-    throw new Error("Refinement not implemented.");
-};
-
-// --- IMAGE & VIDEO FUNCTIONS ---
+// Image Generation
 export const generateImage = async (params: Omit<GenerateImageRequest, 'user'>): Promise<{ image: string }> => {
-    throw new Error("Image generation removed via User Request.");
+    const response = await fetch(`${API_BASE}/generate-image`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(params),
+    });
+    return handleApiResponse(response);
 };
 
-export const generateAndAssignImage = async (params: Omit<GenerateImageRequest, 'user'>): Promise<{ updatedItem: GeneratedItem }> => {
-     throw new Error("Image generation removed via User Request.");
-};
-
-
+// Video Generation
 export const startVideoGeneration = async (params: VideoGenerationParams): Promise<any> => {
-    throw new Error("Video generation removed via User Request.");
+    const response = await fetch(`${API_BASE}/generate-video`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(params),
+    });
+    return handleApiResponse(response);
 };
 
 export const checkVideoGenerationStatus = async (operation: any, user: User): Promise<VideoOperationStatus> => {
-     throw new Error("Video generation removed via User Request.");
+    const response = await fetch(`${API_BASE}/video-status`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ operation, user }),
+    });
+    return handleApiResponse(response);
+};
+
+// Prompt Engineering (Alchemy)
+export const generatePrompts = async (params: {
+    basePrompt: string;
+    negativePrompt: string;
+    mjParams: any;
+    gptParams: any;
+    geminiParams: any;
+    generateMidjourney: boolean;
+    generateGpt: boolean;
+    generateGemini: boolean;
+    user: User;
+}): Promise<PromptGenerationResult> => {
+    const response = await fetch(`${API_BASE}/generate-prompts`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(params),
+    });
+    return handleApiResponse(response);
+};
+
+// Master Tools History
+export const fetchMasterToolsHistory = async (): Promise<MasterToolHistoryItem[]> => {
+    const response = await fetch(`${API_BASE}/master-tools-history`, {
+        method: 'GET',
+        headers: getAuthHeaders(),
+    });
+    return handleApiResponse(response);
+};
+
+export const clearMasterToolsHistory = async (): Promise<void> => {
+    const response = await fetch(`${API_BASE}/master-tools-history`, {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+    });
+    return handleApiResponse(response);
 };
