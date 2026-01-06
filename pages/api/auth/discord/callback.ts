@@ -3,7 +3,6 @@ import { Buffer } from 'buffer';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import crypto from 'crypto';
 import { exchangeCodeForToken, getUserProfile, constructAvatarUrl } from '../../../../lib/discord';
-import { isUserWhitelisted } from '../../../../lib/googleSheets';
 import type { User } from '../../../../types';
 
 const SESSION_SECRET = process.env.SESSION_SECRET || 'default-secret-for-dev-that-is-32-chars-long';
@@ -39,11 +38,6 @@ export default async function handler(
     try {
         const tokenResponse = await exchangeCodeForToken(code);
         const discordUser = await getUserProfile(tokenResponse.access_token);
-
-        const isWhitelisted = await isUserWhitelisted(discordUser.id);
-        if (!isWhitelisted) {
-            return res.status(403).redirect('/?error=not_whitelisted');
-        }
 
         const user: User = {
             id: discordUser.id,

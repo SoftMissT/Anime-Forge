@@ -53,8 +53,7 @@
 - **IA:** Google Gemini, DeepSeek, OpenAI
 - **Autenticação & Chaves API:** Supabase (PostgreSQL)
 - **Banco de Dados Principal:** Turso (libSQL)
-- **Armazenamento de Mídia:** Cloudinary, ImageKit
-- **Whitelist (Controle de Acesso):** Google Sheets API
+- **Armazenamento de Mídia:** (Removido, buscando nova solução)
 - **Backend (API):** Serverless Functions (Vercel/Supabase)
 
 ### 🚀 Começando a Jornada (Setup)
@@ -63,7 +62,7 @@ Prepare seu ambiente para se tornar um mestre da forja.
 #### Requisitos
 - Node.js v18+
 - Git
-- Contas nos serviços de nuvem necessários (Discord, Google, Supabase, Turso, Cloudinary, etc.).
+- Contas de desenvolvedor para os serviços de nuvem utilizados (ex: Discord, Supabase, Turso e provedores de IA).
 
 #### 1. Clone o Repositório
 ```bash
