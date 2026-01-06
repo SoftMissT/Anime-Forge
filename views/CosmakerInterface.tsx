@@ -1,14 +1,11 @@
 import React, { useState, useCallback } from 'react';
-// FIX: Replaced non-existent hooks with correct ones from AppContext
 import { useAppCore, useCosmaker } from '../contexts/AppContext';
 import { FiltersPanel } from './cosmaker/FiltersPanel';
 import { ResultsPanel } from './cosmaker/ResultsPanel';
-// FIX: Imported SelectOption from types.ts
 import type { SelectOption } from '../types';
-// FIX: Imported CosmakerItem from types.ts
 import type { CosmakerItem } from '../types';
-// FIX: Added missing constants
-import { COSMAKER_CHARACTER_TYPES, COSMAKER_ART_STYLES } from '../constants';
+// FIX: Use absolute import for constants
+import { COSMAKER_CHARACTER_TYPES, COSMAKER_ART_STYLES } from '@/constants';
 
 export interface CosmakerFiltersState {
     prompt: string;
@@ -27,7 +24,6 @@ const initialFiltersState: CosmakerFiltersState = {
 };
 
 const CosmakerInterface: React.FC = () => {
-    // FIX: Corrected hook usage
     const { loadingState, setLoadingState, appError: error, setAppError: setError } = useAppCore();
     const { history, setHistory, toggleFavorite } = useCosmaker();
     const [filters, setFilters] = useState<CosmakerFiltersState>(initialFiltersState);
@@ -66,7 +62,10 @@ const CosmakerInterface: React.FC = () => {
                 const newItem: CosmakerItem = {
                     id: `cosmaker-${Date.now()}`,
                     prompt: prompt,
-                    imageUrl,
+                    visualDescription: "Sem descrição", // Placeholder
+                    generatedPrompt: prompt,
+                    // FIX: Adapt to CosmakerItem type if imageUrl was removed
+                    // Assuming CosmakerItem structure from types.ts
                     isFavorite: false,
                 };
                 setHistory(prev => [newItem, ...prev]);

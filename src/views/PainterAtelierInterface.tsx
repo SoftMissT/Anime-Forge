@@ -1,8 +1,4 @@
-// src/views/PainterAtelierInterface.tsx
+// Deprecated file - replaced by src/views/CosmakerInterface.tsx
 import React from 'react';
 import { CosmakerInterface } from './CosmakerInterface';
-
-export const PainterAtelierInterface: React.FC = () => {
-    // A aba 'cosmaker' corresponde à interface de edição de imagens
-    return <CosmakerInterface />;
-};
+export const PainterAtelierInterface = CosmakerInterface;

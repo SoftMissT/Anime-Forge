@@ -1,14 +1,11 @@
 import React, { useState, useCallback } from 'react';
-// FIX: Replaced non-existent hooks with correct ones from AppContext
 import { useAppCore, useForge } from '../contexts/AppContext';
 import { FiltersPanel } from './conflicts/FiltersPanel';
 import { ResultsPanel } from './conflicts/ResultsPanel';
-// FIX: Imported SelectOption from types.ts
 import type { SelectOption } from '../types';
-// FIX: Imported ConflictItem from types.ts
 import type { ConflictItem, GeneratedItem } from '../types';
-// FIX: Imported constants
-import { CONFLICT_SCALES, CONFLICT_TYPES, FACTIONS } from '../constants';
+// FIX: Use absolute import for constants
+import { CONFLICT_SCALES, CONFLICT_TYPES, FACTIONS } from '@/constants';
 
 export interface ConflictFiltersState {
     prompt: string;
@@ -27,9 +24,7 @@ const initialFiltersState: ConflictFiltersState = {
 };
 
 const ConflictsInterface: React.FC = () => {
-    // FIX: Corrected hook usage
     const { loadingState, setLoadingState, appError: error, setAppError: setError } = useAppCore();
-    // FIX: Using useForge for history and detail modal
     const { history, addHistoryItem, toggleFavorite, setSelectedItem: openDetailModal } = useForge();
     const [filters, setFilters] = useState<ConflictFiltersState>(initialFiltersState);
     
@@ -63,7 +58,6 @@ const ConflictsInterface: React.FC = () => {
 
             const parsedResponse = JSON.parse(responseText);
             
-            // FIX: Adapt to GeneratedItem for context compatibility
             const newItem: GeneratedItem = {
                 id: `conflict-${Date.now()}`,
                 nome: parsedResponse.name,
@@ -73,7 +67,6 @@ const ConflictsInterface: React.FC = () => {
                 is_favorite: false,
                 createdAt: new Date().toISOString(),
                 ...parsedResponse,
-                 // Add dummy required fields
                 raridade: 'Rara',
                 nivel_sugerido: 10,
                 ganchos_narrativos: [],
@@ -92,7 +85,6 @@ const ConflictsInterface: React.FC = () => {
         openDetailModal(item);
     };
 
-    // Filter history for this view
     const conflictHistory = history.filter(item => item.categoria === 'Guerra de Clãs');
 
     return (
@@ -109,9 +101,7 @@ const ConflictsInterface: React.FC = () => {
                 isLoading={loadingState.active}
                 error={error?.message || null}
                 onRetry={handleGenerate}
-// FIX: Cast handler to 'any' to resolve type incompatibility between GeneratedItem and ConflictItem.
                 onViewDetails={handleViewDetails as any}
-// FIX: Cast handler to `any` to resolve type incompatibility between GeneratedItem and ConflictItem, which was causing a type error.
                 onToggleFavorite={toggleFavorite as any}
             />
         </div>

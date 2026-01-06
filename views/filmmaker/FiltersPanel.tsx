@@ -3,8 +3,8 @@ import { Button } from '../../components/ui/Button';
 import { CollapsibleSection } from '../../components/ui/CollapsibleSection';
 import { Select } from '../../components/ui/Select';
 import { TextArea } from '../../components/ui/TextArea';
-// FIX: Added missing constants
-import { VIDEO_ASPECT_RATIOS, VIDEO_RESOLUTIONS } from '../../constants';
+// FIX: Use absolute import for constants
+import { VIDEO_ASPECT_RATIOS, VIDEO_RESOLUTIONS } from '@/constants';
 import type { FilmmakerFiltersState } from '../FilmmakerInterface';
 import { SelectOption } from '../../types';
 
@@ -63,7 +63,6 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ({ filters, setFilters,
                     className="w-full" 
                     size="lg" 
                     onClick={onGenerate}
-                    // FIX: Added isLoading prop
                     isLoading={isLoading}
                 >
                     {isLoading ? 'Renderizando...' : 'Gerar Vídeo'}

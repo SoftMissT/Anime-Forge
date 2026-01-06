@@ -1,14 +1,11 @@
 import React, { useState, useCallback, useEffect } from 'react';
-// FIX: Replaced non-existent hooks with correct ones from AppContext
 import { useAppCore, useForge } from '../contexts/AppContext';
 import { FiltersPanel } from './characters/FiltersPanel';
 import { ResultsPanel } from './characters/ResultsPanel';
-// FIX: Imported SelectOption from types.ts
 import type { SelectOption } from '../types';
-// FIX: Imported CharacterItem from types.ts
 import type { CharacterItem, GeneratedItem } from '../types';
-// FIX: Imported constants
-import { CHARACTER_AFFILIATIONS, DEMON_SLAYER_RANKS, DEMON_RANKS } from '../constants';
+// FIX: Use absolute import for constants
+import { CHARACTER_AFFILIATIONS, DEMON_SLAYER_RANKS, DEMON_RANKS } from '@/constants';
 
 export interface CharacterFiltersState {
     prompt: string;
@@ -27,7 +24,6 @@ const initialFiltersState: CharacterFiltersState = {
 };
 
 const CharactersInterface: React.FC = () => {
-    // FIX: Corrected hook usage
     const { loadingState, setLoadingState, appError: error, setAppError: setError } = useAppCore();
     const { history, addHistoryItem, toggleFavorite, setSelectedItem: openDetailModal } = useForge();
     const [filters, setFilters] = useState<CharacterFiltersState>(initialFiltersState);
@@ -96,7 +92,6 @@ const CharactersInterface: React.FC = () => {
     }, [filters, addHistoryItem, setLoadingState, setError]);
 
     const handleViewDetails = (item: GeneratedItem) => {
-        // FIX: Add content property for DetailModal compatibility
         const detailItem = {
             ...item,
             content: `**Aparência:**\n${(item as any).appearance}\n\n**Personalidade:**\n${(item as any).personality}\n\n**História:**\n${(item as any).backstory}\n\n**Habilidades:**\n${(item as any).abilities}`,

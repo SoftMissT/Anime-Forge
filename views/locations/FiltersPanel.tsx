@@ -4,8 +4,8 @@ import { CollapsibleSection } from '../../components/ui/CollapsibleSection';
 import { Select } from '../../components/ui/Select';
 import { Switch } from '../../components/ui/Switch';
 import { TextArea } from '../../components/ui/TextArea';
-// FIX: Added missing constants
-import { LOCATION_BIOMES, LOCATION_ATMOSPHERES } from '../../constants';
+// FIX: Use absolute import for constants
+import { LOCATION_BIOMES, LOCATION_ATMOSPHERES } from '@/constants';
 import type { LocationFiltersState } from '../LocationsInterface';
 import { SelectOption } from '../../types';
 
@@ -63,7 +63,6 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ({ filters, setFilters,
                        <Switch 
                             label="Gerar Pontos de Interesse"
                             checked={filters.generatePointsOfInterest}
-                            // FIX: pass boolean value from event
                             onChange={(e) => updateFilter('generatePointsOfInterest', e.target.checked)}
                        />
                     </div>
@@ -75,7 +74,6 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ({ filters, setFilters,
                     className="w-full" 
                     size="lg" 
                     onClick={onGenerate}
-                    // FIX: Added isLoading prop
                     isLoading={isLoading}
                 >
                     {isLoading ? 'Criando...' : 'Gerar Local'}

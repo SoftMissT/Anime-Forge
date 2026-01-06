@@ -1,11 +1,10 @@
 import React from 'react';
 import { Button } from '../../components/ui/Button';
 import { CollapsibleSection } from '../../components/ui/CollapsibleSection';
-// FIX: Import from ui barrel file
 import { SearchableMultiSelect, Select } from '../../components/ui';
 import { TextArea } from '../../components/ui/TextArea';
-// FIX: Added missing constants
-import { COSMAKER_CHARACTER_TYPES, COSMAKER_ART_STYLES, COSMAKER_COLORS, COSMAKER_MATERIALS } from '../../constants';
+// FIX: Use absolute import for constants
+import { COSMAKER_CHARACTER_TYPES, COSMAKER_ART_STYLES, COSMAKER_COLORS, COSMAKER_MATERIALS } from '@/constants';
 import type { CosmakerFiltersState } from '../CosmakerInterface';
 import { SelectOption } from '../../types';
 
@@ -83,7 +82,6 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ({ filters, setFilters,
                     className="w-full" 
                     size="lg" 
                     onClick={onGenerate}
-                    // FIX: Added isLoading prop
                     isLoading={isLoading}
                 >
                     {isLoading ? 'Criando Arte...' : 'Gerar Imagem'}

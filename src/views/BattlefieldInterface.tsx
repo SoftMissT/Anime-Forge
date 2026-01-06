@@ -8,7 +8,8 @@ import { AuthOverlay } from '../components/AuthOverlay';
 import { analytics } from '../lib/analytics';
 import { ClanWarsPanel } from '../components/ClanWarsPanel';
 import { ClanWarsResultDisplay } from '../components/ClanWarsResultDisplay';
-import { SwordsIcon } from '../components/icons';
+// FIX: Ensure correct import from icons index
+import { SwordsIcon } from '../components/icons/index';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import { Modal } from '../components/ui/Modal';
 import { Button } from '../components/ui/Button';

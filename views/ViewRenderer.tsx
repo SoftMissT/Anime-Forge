@@ -1,5 +1,4 @@
 import React from 'react';
-// FIX: Added View to types.ts export
 import type { View } from '../types';
 import ForgeInterface from './ForgeInterface';
 import ConflictsInterface from './ConflictsInterface';
@@ -12,10 +11,9 @@ import CosmakerInterface from './CosmakerInterface';
 import FilmmakerInterface from './FilmmakerInterface';
 import { useAuth } from '../contexts/AppContext';
 import { AuthOverlay } from '../components/AuthOverlay';
-// FIX: Added VIEWS to constants.tsx export
-import { VIEWS } from '../constants';
+// FIX: Use absolute import for constants to resolve module error
+import { VIEWS } from '@/constants';
 
-// A map to associate view IDs with their corresponding components
 const viewMap: Record<View, React.ComponentType> = {
   forge: ForgeInterface,
   conflicts: ConflictsInterface,
@@ -39,7 +37,6 @@ export const ViewRenderer: React.FC<ViewRendererProps> = ({ activeView }) => {
   const activeViewData = VIEWS.find(v => v.id === activeView);
   const viewTitle = activeViewData ? `Acesso à ${activeViewData.label}` : "Acesso Restrito";
 
-  // For this stage, all views are protected.
   const isProtectedView = true;
 
   return (

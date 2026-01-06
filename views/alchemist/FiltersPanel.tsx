@@ -4,8 +4,8 @@ import { CollapsibleSection } from '../../components/ui/CollapsibleSection';
 import { Select } from '../../components/ui/Select';
 import { Slider } from '../../components/ui/Slider';
 import { TextArea } from '../../components/ui/TextArea';
-// FIX: Added AI_MODELS to constants export
-import { AI_MODELS } from '../../constants';
+// FIX: Use absolute import for constants
+import { AI_MODELS } from '@/constants';
 import type { AlchemistState } from '../AlchemistInterface';
 import { SelectOption } from '../../types';
 
@@ -90,7 +90,6 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ({ filters, setFilters,
                     className="w-full" 
                     size="lg" 
                     onClick={onGenerate}
-                    // FIX: Added isLoading prop
                     isLoading={isLoading}
                 >
                     {isLoading ? 'Transmutando...' : 'Gerar Resposta'}

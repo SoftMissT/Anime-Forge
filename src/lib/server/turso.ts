@@ -1,8 +1,6 @@
-// lib/server/turso.ts
+// src/lib/server/turso.ts
 import { createClient } from '@libsql/client';
 
-// FIX: Module '"@libsql/client"' declares 'Client' locally, but it is not exported.
-// The Client type is inferred from the return type of createClient to resolve the import error.
 type Client = ReturnType<typeof createClient>;
 
 let initializationPromise: Promise<Client> | null = null;
@@ -16,7 +14,6 @@ async function createAndInitializeClient(): Promise<Client> {
     }
 
     const client = createClient({ url, authToken });
-    console.log('Cliente Turso criado. Inicializando tabelas...');
 
     try {
         await client.batch([
@@ -40,7 +37,6 @@ async function createAndInitializeClient(): Promise<Client> {
                 updatedAt TEXT NOT NULL
             );`
         ], 'write');
-        console.log("Banco de dados Turso inicializado (tabelas verificadas/criadas).");
         return client;
     } catch (e: any) {
         console.error("Falha ao inicializar as tabelas do Turso:", e.message);

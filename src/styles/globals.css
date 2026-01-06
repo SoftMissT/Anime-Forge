@@ -24,6 +24,10 @@
   /* Borders & Dividers */
   --border-color: rgba(255, 255, 255, 0.1);
   --border-subtle: rgba(255, 255, 255, 0.05);
+
+  /* Default Accents (Forge) */
+  --accent-start: #1C3E5A; 
+  --accent-end: #4A90E2;
 }
 
 /* ═══════════════════════════════════════════════════════════ */
@@ -31,9 +35,26 @@
 /* ═══════════════════════════════════════════════════════════ */
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html, body, #root { height: 100%; }
-body { font-family: 'Inter', 'Noto Sans JP', sans-serif; background: var(--bg-primary); color: var(--text-primary); overflow: hidden; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+html, body { height: 100%; width: 100%; }
 
+/* Next.js Root Element Fix */
+#__next {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+body { 
+    font-family: 'Inter', 'Noto Sans JP', sans-serif; 
+    background-color: var(--bg-primary); 
+    color: var(--text-primary); 
+    overflow: hidden; 
+    -webkit-font-smoothing: antialiased; 
+    -moz-osx-font-smoothing: grayscale; 
+}
+
+/* View Themes */
 .view-forge { --accent-start: #1C3E5A; --accent-end: #4A90E2; }
 .view-characters { --accent-start: #E65100; --accent-end: #FF9800; }
 .view-techniques { --accent-start: #F9A825; --accent-end: #FDD835; }
@@ -44,7 +65,6 @@ body { font-family: 'Inter', 'Noto Sans JP', sans-serif; background: var(--bg-pr
 .view-cosmaker { --accent-start: #E91E63; --accent-end: #880E4F; }
 .view-filmmaker { --accent-start: #0284c7; --accent-end: #06b6d4; }
 
-
 .font-japanese { font-family: 'Yuji Syuku', serif; }
 .font-mono { font-family: 'JetBrains Mono', monospace; }
 
@@ -54,6 +74,8 @@ body { font-family: 'Inter', 'Noto Sans JP', sans-serif; background: var(--bg-pr
     height: 100vh;
     width: 100vw;
     position: relative;
+    background-color: var(--bg-primary);
+    overflow: hidden; /* Prevent double scrollbars */
 }
 
 .main-content {
@@ -67,6 +89,8 @@ body { font-family: 'Inter', 'Noto Sans JP', sans-serif; background: var(--bg-pr
 .app-main-view {
     flex: 1;
     min-height: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 /* ═══════════════════════════════════════════════════════════ */
@@ -74,6 +98,38 @@ body { font-family: 'Inter', 'Noto Sans JP', sans-serif; background: var(--bg-pr
 /* ═══════════════════════════════════════════════════════════ */
 
 @layer components {
+  .btn {
+    @apply inline-flex items-center justify-center font-semibold rounded-md transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[var(--bg-primary)] disabled:opacity-50 disabled:cursor-not-allowed active:scale-95;
+  }
+  
+  .btn-primary, .btn-forge {
+    @apply bg-gradient-to-r from-[var(--accent-start)] to-[var(--accent-end)] text-white hover:opacity-90 shadow-lg shadow-[var(--accent-start)]/20;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-800 text-white hover:bg-gray-700 border border-gray-600;
+  }
+
+  .btn-alchemy {
+    @apply bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-700 hover:to-indigo-700 shadow-lg shadow-purple-500/20;
+  }
+
+  .btn-clan_wars {
+    @apply bg-gradient-to-r from-red-800 to-red-600 text-white hover:from-red-900 hover:to-red-700 shadow-lg shadow-red-900/40;
+  }
+
+  .btn-cosmaker {
+    @apply bg-gradient-to-r from-pink-600 to-rose-600 text-white hover:from-pink-700 hover:to-rose-700 shadow-lg shadow-pink-500/20;
+  }
+
+  .btn-filmmaker {
+    @apply bg-gradient-to-r from-cyan-600 to-blue-600 text-white hover:from-cyan-700 hover:to-blue-700 shadow-lg shadow-cyan-500/20;
+  }
+
+  .btn-master_tools {
+    @apply bg-gradient-to-r from-indigo-800 to-violet-800 text-white hover:from-indigo-900 hover:to-violet-900 shadow-lg shadow-indigo-900/40;
+  }
+
   .multiselect-button {
     @apply w-full flex items-center justify-between bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-md py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-[var(--accent-start)] focus:border-[var(--accent-start)] transition-all duration-200;
   }
@@ -81,8 +137,69 @@ body { font-family: 'Inter', 'Noto Sans JP', sans-serif; background: var(--bg-pr
     @apply border-[var(--accent-start)];
   }
 
+  /* Custom Scrollbar */
+  .inner-scroll::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .inner-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .inner-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+  }
+  .inner-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  /* Result Card Styling */
+  .result-card {
+    @apply relative bg-[var(--bg-card)] border border-[var(--border-color)] rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:border-[var(--accent-start)] hover:-translate-y-1 hover:shadow-xl cursor-pointer h-full flex flex-col;
+  }
+  .result-card.is-selected {
+    @apply ring-2 ring-[var(--accent-start)] border-[var(--accent-start)] bg-[var(--bg-secondary)];
+  }
+  .result-card-image {
+    @apply w-full h-48 object-cover transition-transform duration-500;
+  }
+  .result-card:hover .result-card-image {
+    @apply scale-105;
+  }
+  .result-card-placeholder {
+    @apply w-full h-48 bg-gray-800/50 flex items-center justify-center border-b border-[var(--border-color)];
+  }
+  .result-card-body {
+    @apply p-4 flex flex-col flex-grow;
+  }
+  .result-card-title {
+    @apply text-lg font-bold text-white mb-1 line-clamp-1 font-gangofthree;
+  }
+  .result-card-tags {
+    @apply flex items-center gap-2 text-xs mb-3;
+  }
+  .result-card-rarity {
+    @apply px-2 py-0.5 rounded-full font-bold uppercase tracking-wider bg-gray-700 text-gray-300;
+  }
+  .result-card-rarity.rarity-common { @apply bg-gray-700 text-gray-300; }
+  .result-card-rarity.rarity-uncommon { @apply bg-green-900/50 text-green-400 border border-green-800; }
+  .result-card-rarity.rarity-rare { @apply bg-blue-900/50 text-blue-400 border border-blue-800; }
+  .result-card-rarity.rarity-epic { @apply bg-purple-900/50 text-purple-400 border border-purple-800; }
+  .result-card-rarity.rarity-legendary { @apply bg-yellow-900/50 text-yellow-400 border border-yellow-700 shadow-[0_0_10px_rgba(234,179,8,0.2)]; }
+
+  .result-card-description {
+    @apply text-sm text-[var(--text-secondary)] line-clamp-3 mb-4 flex-grow;
+  }
+  .result-card-actions {
+    @apply flex items-center gap-2 mt-auto pt-3 border-t border-[var(--border-subtle)];
+  }
+  .card-action-btn {
+    @apply p-2 rounded-md hover:bg-white/10 text-gray-400 hover:text-white transition-colors;
+  }
+
+  /* Range Slider */
   .range-slider {
-    @apply bg-gray-600; /* Track color */
+    @apply bg-gray-600;
   }
   .range-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
@@ -90,25 +207,13 @@ body { font-family: 'Inter', 'Noto Sans JP', sans-serif; background: var(--bg-pr
     width: 1rem; height: 1rem;
     border-radius: 9999px;
     background: var(--accent-start);
-    transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+    cursor: pointer;
+    transition: transform 0.15s ease-out;
   }
   .range-slider:hover::-webkit-slider-thumb {
     transform: scale(1.2);
-    box-shadow: 0 0 8px 0 var(--accent-start);
-  }
-   .range-slider::-moz-range-thumb {
-    width: 1rem; height: 1rem;
-    border-radius: 9999px;
-    background: var(--accent-start);
-    border: none;
-    transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
-  }
-  .range-slider:hover::-moz-range-thumb {
-    transform: scale(1.2);
-    box-shadow: 0 0 8px 0 var(--accent-start);
   }
 }
-
 
 /* ═══════════════════════════════════════════════════════════ */
 /* 🎯 HEADER & TABS STYLES */
@@ -116,8 +221,8 @@ body { font-family: 'Inter', 'Noto Sans JP', sans-serif; background: var(--bg-pr
 
 .app-header {
     position: relative;
-    height: 88px;
-    background: rgba(10, 10, 12, 0.8);
+    height: 72px;
+    background: rgba(10, 10, 12, 0.85);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border-subtle);
     display: flex;
@@ -127,7 +232,7 @@ body { font-family: 'Inter', 'Noto Sans JP', sans-serif; background: var(--bg-pr
     flex-shrink: 0;
     z-index: 50;
 }
-.header-controls { display: flex; align-items: center; gap: 16px; }
+.header-controls { display: flex; align-items: center; gap: 12px; }
 .header-icon-btn {
     display: inline-flex;
     align-items: center;
@@ -141,7 +246,7 @@ body { font-family: 'Inter', 'Noto Sans JP', sans-serif; background: var(--bg-pr
     background-color: rgba(255, 255, 255, 0.1);
     color: white;
 }
-.user-avatar-btn { width: 40px; height: 40px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: border-color 0.2s; }
+.user-avatar-btn { width: 36px; height: 36px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: border-color 0.2s; }
 .user-avatar-btn:hover { border-color: var(--accent-start); }
 
 .tab-navigation-container {
@@ -154,22 +259,26 @@ body { font-family: 'Inter', 'Noto Sans JP', sans-serif; background: var(--bg-pr
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 44px;
-    padding: 0 16px;
-    gap: 8px;
-    border-radius: 10px;
+    height: 36px;
+    padding: 0 12px;
+    gap: 6px;
+    border-radius: 8px;
     color: var(--text-muted);
     background-color: transparent;
     border: none;
     cursor: pointer;
     transition: all 0.2s ease-out;
     outline: none;
-    font-weight: 600;
-    font-size: 14px;
+    font-weight: 500;
+    font-size: 13px;
 }
 
 .tab-button-text {
     white-space: nowrap;
+    display: none;
+}
+@media (min-width: 1024px) {
+    .tab-button-text { display: inline; }
 }
 
 .tab-button:hover {
@@ -177,20 +286,15 @@ body { font-family: 'Inter', 'Noto Sans JP', sans-serif; background: var(--bg-pr
     background-color: rgba(255, 255, 255, 0.05);
 }
 
-.tab-button:focus-visible {
-    box-shadow: 0 0 0 2px var(--bg-primary), 0 0 0 4px var(--accent-start);
-}
-
 .tab-button.is-active {
-    color: var(--text-primary);
+    color: white;
 }
 
 .active-tab-glow {
     position: absolute;
     inset: 0;
-    border-radius: 10px;
+    border-radius: 8px;
     background: linear-gradient(to right, var(--accent-start), var(--accent-end));
-    box-shadow: 0 0 16px -2px var(--accent-start), 0 0 8px -4px var(--accent-end);
     opacity: 0.8;
     z-index: -1;
 }
@@ -198,20 +302,13 @@ body { font-family: 'Inter', 'Noto Sans JP', sans-serif; background: var(--bg-pr
 /* Fix dropdown overlap */
 .multiselect-dropdown {
     position: absolute;
-    z-index: 100; /* Ensure this is high enough */
+    z-index: 100;
     width: 100%;
     margin-top: 4px;
     background-color: #1f2937;
     border: 1px solid var(--border-color);
     border-radius: 0.5rem;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
-
-.filter-panel-body {
-    /* overflow-y-auto is needed for scrolling, but it creates a stacking context. */
-    /* The dropdown needs to be positioned relative to the viewport or a higher parent */
-    /* A high z-index on the dropdown itself is the simplest solution. */
-    position: relative; /* This helps manage z-index within the panel */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
 }
 
 /* ═══════════════════════════════════════════════════════════ */

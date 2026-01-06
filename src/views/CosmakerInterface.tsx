@@ -1,152 +1,154 @@
-// components/CosmakerInterface.tsx
+// src/views/CosmakerInterface.tsx
 import React, { useState, useCallback } from 'react';
-import { useAppCore, useAuth, useUsage } from '../contexts/AppContext';
-import { generateImage } from '../lib/client/orchestrationService';
+import { useAppCore, useAuth, useUsage, useCosmaker } from '../contexts/AppContext';
+import { orchestrateGeneration } from '../lib/client/orchestrationService';
 import { AuthOverlay } from '../components/AuthOverlay';
-import { Button, Spinner, TextArea } from '../components/ui';
-import { DownloadIcon, ImageIcon, SparklesIcon, TrashIcon } from '../components/icons';
+import { Button, Spinner, TextArea, Select } from '../components/ui';
+// FIX: Ensure correct import from icons index
+import { CopyIcon, SparklesIcon } from '../components/icons/index';
 import { useToast } from '../components/ToastProvider';
 import { motion } from 'framer-motion';
+import { COSMAKER_ART_STYLES } from '../constants';
+import type { CosmakerItem, FilterState, GeneratedItem } from '../types';
+import { v4 as uuidv4 } from 'uuid';
 
 export const CosmakerInterface: React.FC = () => {
     const { setAppError } = useAppCore();
-    const { isAuthenticated, user, handleLoginClick } = useAuth();
-    const { usageCount, decrementUsage } = useUsage();
+    const { isAuthenticated, handleLoginClick } = useAuth();
+    const { history, setHistory, toggleFavorite } = useCosmaker();
     const { showToast } = useToast();
 
-    const [sourceImage, setSourceImage] = useState<{ file: File, preview: string, base64: string, mimeType: string } | null>(null);
-    const [generatedImage, setGeneratedImage] = useState<string | null>(null);
     const [prompt, setPrompt] = useState('');
+    const [artStyle, setArtStyle] = useState(COSMAKER_ART_STYLES[0].value);
     const [isLoading, setIsLoading] = useState(false);
-    const [isDragOver, setIsDragOver] = useState(false);
 
-    const processImageFile = (file: File) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            const base64String = (reader.result as string).split(',')[1];
-            setSourceImage({
-                file,
-                preview: URL.createObjectURL(file),
-                base64: base64String,
-                mimeType: file.type,
-            });
-            setGeneratedImage(null); // Clear previous result
-        };
-        reader.readAsDataURL(file);
-    };
-
-    const handleImageDrop = (e: React.DragEvent<HTMLDivElement>) => {
-        e.preventDefault(); e.stopPropagation(); setIsDragOver(false);
-        const file = e.dataTransfer.files[0];
-        if (file && file.type.startsWith('image/')) processImageFile(file);
-    };
-
-    const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) processImageFile(file);
-    };
-
-    const handleGenerateImage = async () => {
-        if (!user || (!prompt.trim() && !sourceImage)) return;
-        
-        if (usageCount <= 0) {
-            showToast('error', 'Você atingiu seu limite de gerações pesadas (imagem/vídeo) por hoje.');
-            return;
-        }
-
+    const handleGenerate = async () => {
+        if (!prompt.trim()) return;
         setIsLoading(true);
+
+        const filters: FilterState = {
+            category: 'Prompt Visual',
+            rarity: 'Aleatória',
+            level: 1,
+            quantity: 1,
+            promptModifier: `Estilo artístico desejado: ${artStyle}. Descrição: ${prompt}`,
+            thematics: [],
+            country: 'Japão',
+            tonalidade: 'Aleatória'
+        };
+
         try {
-            // FIX: Removed the `user` property. The API endpoint handles user authentication via session cookies.
-            const result = await generateImage({
-                prompt,
-                sourceImage: sourceImage ? { data: sourceImage.base64, mimeType: sourceImage.mimeType } : undefined,
-            });
-            setGeneratedImage(`data:image/jpeg;base64,${result.image}`);
-            decrementUsage();
-            showToast('success', 'Imagem processada com sucesso!');
+            // Reutiliza a orquestração para gerar o JSON do prompt visual
+            const resultRaw = await orchestrateGeneration(filters, prompt);
+            // O backend deve retornar um objeto que bate com o schema de 'Prompt Visual' definido no promptBuilder
+            const result = resultRaw as any; 
+
+            const newItem: CosmakerItem = {
+                id: uuidv4(),
+                prompt: prompt,
+                visualDescription: result.visualDescription || result.descricao || "Sem descrição visual.",
+                generatedPrompt: result.generatedPrompt || result.imagePromptDescription || "Prompt não gerado.",
+                isFavorite: false,
+            };
+
+            setHistory(prev => [newItem, ...prev]);
+            showToast('success', 'Prompt visual forjado com sucesso!');
+
         } catch (error: any) {
-            setAppError({ message: 'Falha na Geração de Imagem', details: error.message, canRetry: true, onRetry: handleGenerateImage });
+            setAppError({ message: 'Falha na Criação do Prompt', details: error.message });
         } finally {
             setIsLoading(false);
         }
     };
-    
-    const resultImage = generatedImage || (sourceImage ? `data:image/jpeg;base64,${sourceImage.base64}` : null);
+
+    const handleCopy = (text: string) => {
+        navigator.clipboard.writeText(text);
+        showToast('success', 'Copiado para a área de transferência!');
+    };
 
     return (
-        <div className="relative w-full h-full flex flex-col items-center justify-start gap-4 p-4">
-            {!isAuthenticated && <AuthOverlay onLoginClick={handleLoginClick} title="Acesso ao Estúdio Cosmaker" />}
+        <div className="w-full h-full flex flex-col md:flex-row gap-4 p-4 overflow-hidden">
+            {!isAuthenticated && <AuthOverlay onLoginClick={handleLoginClick} title="Acesso ao Visualizador" />}
             
-            <div className="w-full max-w-4xl flex justify-between items-center bg-gray-800/50 p-3 rounded-lg border border-[var(--border-color)]">
-                <h3 className="font-semibold text-white">Edição de Imagem com IA (Nano Banana)</h3>
-                <div className="text-sm text-gray-300">
-                    Gerações pesadas restantes: <span className="font-bold text-lg text-[var(--accent-cosmaker-start)]">{usageCount}</span>
-                </div>
-            </div>
+            {/* Input Panel */}
+            <aside className="w-full md:w-1/3 flex flex-col gap-4 bg-gray-900/50 p-4 rounded-lg border border-[var(--border-color)] overflow-y-auto">
+                <h2 className="text-xl font-bold font-gangofthree text-white">Configuração Visual</h2>
+                
+                <Select 
+                    label="Estilo Artístico" 
+                    options={COSMAKER_ART_STYLES} 
+                    value={artStyle as string} 
+                    onChange={v => setArtStyle(v)} 
+                />
 
-            <div 
-                onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); setIsDragOver(true); }}
-                onDragLeave={() => setIsDragOver(false)}
-                onDrop={handleImageDrop}
-                className={`relative w-full max-w-4xl flex-grow bg-black/20 rounded-lg flex items-center justify-center p-2 min-h-[300px] md:min-h-[400px] border-2 border-dashed  transition-colors ${isDragOver ? 'border-purple-500' : 'border-gray-700'}`}
-            >
-                {isLoading ? (
-                    <div className="text-center text-gray-400">
-                        <Spinner size="lg" />
-                        <p className="mt-4">Editando sua imagem...</p>
-                    </div>
-                ) : resultImage ? (
-                    <>
-                        <motion.img 
-                            key={resultImage}
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            src={resultImage} 
-                            alt="Imagem" 
-                            className="w-full h-full object-contain rounded-md" 
-                        />
-                         <div className="absolute top-2 right-2 flex gap-2">
-                             <Button variant="danger" size="sm" className="!p-2" onClick={() => { setSourceImage(null); setGeneratedImage(null); }}>
-                                 <TrashIcon className="w-4 h-4" />
-                             </Button>
-                             <a 
-                                href={resultImage} 
-                                download={`kimetsu-forge-edited-${Date.now()}.jpg`}
-                                className="p-2 bg-black/60 rounded-full text-white hover:bg-black/80 transition-colors"
-                                aria-label="Baixar imagem"
-                            >
-                                <DownloadIcon className="w-5 h-5" />
-                            </a>
-                        </div>
-                    </>
-                ) : (
-                    <label htmlFor="image-upload" className="text-center cursor-pointer text-gray-500 p-8">
-                        <ImageIcon className="w-12 h-12 mx-auto mb-2" />
-                        <p className="font-semibold text-white">Arraste uma imagem para editar</p>
-                        <p className="text-sm">ou clique para selecionar</p>
-                        <input type="file" id="image-upload" className="hidden" accept="image/*" onChange={handleImageSelect} />
-                    </label>
-                )}
-            </div>
-
-            <div className="w-full max-w-4xl flex flex-col gap-4">
                 <TextArea
-                    label="Descreva a edição que você quer fazer:"
-                    placeholder="Ex: 'adicione um filtro retro', 'remova a pessoa no fundo', 'mude o fundo para uma floresta mística'..."
+                    label="Descreva o Personagem ou Cena"
+                    placeholder="Ex: Um Hashira da Névoa lutando contra um Oni aranha em uma floresta de bambu sob o luar..."
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
-                    rows={2}
+                    rows={6}
                     disabled={isLoading}
                 />
+
                 <Button
-                    onClick={handleGenerateImage}
-                    disabled={!prompt.trim() || !sourceImage || isLoading || usageCount <= 0}
-                    className="btn-cosmaker w-full"
+                    onClick={handleGenerate}
+                    disabled={!prompt.trim() || isLoading}
+                    className="btn-cosmaker w-full mt-auto"
                     size="lg"
                 >
-                    {isLoading ? <><Spinner size="sm" /> Processando...</> : <><SparklesIcon className="w-5 h-5" /> Aplicar Edição</>}
+                    {isLoading ? <><Spinner size="sm" /> Criando Prompt...</> : <><SparklesIcon className="w-5 h-5" /> Gerar Prompt Visual</>}
                 </Button>
-            </div>
+            </aside>
+
+            {/* Results Panel */}
+            <main className="flex-1 bg-black/20 rounded-lg p-4 overflow-y-auto inner-scroll flex flex-col gap-4">
+                {history.length === 0 ? (
+                    <div className="flex-grow flex flex-col items-center justify-center text-gray-500">
+                        <SparklesIcon className="w-16 h-16 mb-4 opacity-50" />
+                        <p>Seus prompts gerados aparecerão aqui.</p>
+                    </div>
+                ) : (
+                    history.map((item) => (
+                        <motion.div 
+                            key={item.id}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-lg p-4 flex flex-col gap-3"
+                        >
+                            <div className="flex justify-between items-start">
+                                <h3 className="font-bold text-white text-lg">Conceito Visual</h3>
+                                <div className="flex gap-2">
+                                    <Button variant="ghost" size="sm" onClick={() => toggleFavorite(item)}>
+                                        {item.isFavorite ? '★' : '☆'}
+                                    </Button>
+                                </div>
+                            </div>
+                            
+                            <p className="text-gray-300 text-sm italic border-l-2 border-pink-500 pl-3">
+                                {item.visualDescription}
+                            </p>
+
+                            <div className="bg-black/40 p-3 rounded-md border border-gray-700 mt-2 relative group">
+                                <p className="font-mono text-xs text-green-400 break-words pr-8">
+                                    {item.generatedPrompt}
+                                </p>
+                                <button 
+                                    onClick={() => handleCopy(item.generatedPrompt)}
+                                    className="absolute top-2 right-2 p-1 bg-gray-700 rounded hover:bg-gray-600 transition-colors"
+                                    title="Copiar Prompt"
+                                >
+                                    <CopyIcon className="w-4 h-4 text-white" />
+                                </button>
+                            </div>
+                            <div className="text-xs text-gray-500 mt-1">
+                                Otimizado para Midjourney v6 / Nano Banana
+                            </div>
+                        </motion.div>
+                    ))
+                )}
+            </main>
         </div>
     );
 };
+
+export default CosmakerInterface;

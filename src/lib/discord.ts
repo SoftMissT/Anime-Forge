@@ -1,4 +1,4 @@
-// lib/discord.ts
+// src/lib/discord.ts
 
 export interface DiscordTokenResponse {
     access_token: string;
@@ -18,9 +18,6 @@ export interface DiscordUser {
 
 const API_ENDPOINT = 'https://discord.com/api/v10';
 
-/**
- * Exchanges an authorization code for an access token from Discord's API.
- */
 export async function exchangeCodeForToken(code: string): Promise<DiscordTokenResponse> {
     const clientId = process.env.DISCORD_CLIENT_ID;
     const clientSecret = process.env.DISCORD_CLIENT_SECRET;
@@ -47,23 +44,12 @@ export async function exchangeCodeForToken(code: string): Promise<DiscordTokenRe
     if (!response.ok) {
         const errorData = await response.json();
         console.error('Discord token exchange failed:', errorData);
-        
-        let userFacingError = 'Falha ao trocar o código de autorização do Discord.';
-        if (errorData.error === 'invalid_client') {
-            userFacingError = 'Falha na autenticação: Client ID ou Client Secret do Discord inválido. O administrador precisa verificar as variáveis de ambiente no servidor.';
-        } else if (errorData.error === 'invalid_grant') {
-            userFacingError = 'Falha na autenticação: O código de autorização é inválido ou expirou. Por favor, tente fazer o login novamente.';
-        }
-        
-        throw new Error(userFacingError);
+        throw new Error('Falha ao trocar o código de autorização do Discord.');
     }
 
     return response.json();
 }
 
-/**
- * Fetches the user's profile from Discord's API using an access token.
- */
 export async function getUserProfile(accessToken: string): Promise<DiscordUser> {
     const response = await fetch(`${API_ENDPOINT}/users/@me`, {
         headers: {
@@ -72,22 +58,16 @@ export async function getUserProfile(accessToken: string): Promise<DiscordUser> 
     });
 
     if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Failed to fetch Discord user profile:', errorData);
         throw new Error('Falha ao obter o perfil do usuário do Discord.');
     }
 
     return response.json();
 }
 
-/**
- * Constructs the full URL for a user's avatar.
- */
 export function constructAvatarUrl(userId: string, avatarHash: string | null): string {
     if (avatarHash) {
         const format = avatarHash.startsWith('a_') ? 'gif' : 'png';
         return `https://cdn.discordapp.com/avatars/${userId}/${avatarHash}.${format}?size=128`;
     }
-    // Fallback to default Discord avatar
     return `https://cdn.discordapp.com/embed/avatars/0.png`;
 }

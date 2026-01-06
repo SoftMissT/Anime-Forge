@@ -1,14 +1,11 @@
 import React, { useState, useCallback } from 'react';
-// FIX: Replaced non-existent hooks with correct ones from AppContext
 import { useAppCore, useMasterTools } from '../contexts/AppContext';
 import { FiltersPanel } from './master_tools/FiltersPanel';
 import { ResultsPanel } from './master_tools/ResultsPanel';
-// FIX: Imported SelectOption from types.ts
 import type { SelectOption } from '../types';
-// FIX: Imported MasterToolItem from types.ts
 import type { MasterToolItem } from '../types';
-// FIX: Imported constants
-import { MASTER_TOOL_TYPES, NAME_CATEGORIES, PLOT_HOOK_GENRES, ONOMATOPOEIA_TYPES } from '../constants';
+// FIX: Use absolute import for constants and use NAME_CATEGORIES
+import { MASTER_TOOL_TYPES, NAME_CATEGORIES, PLOT_HOOK_GENRES, ONOMATOPOEIA_TYPES } from '@/constants';
 
 export interface MasterToolFiltersState {
     prompt: string;
@@ -29,7 +26,6 @@ const initialFiltersState: MasterToolFiltersState = {
 };
 
 const MasterToolsInterface: React.FC = () => {
-    // FIX: Corrected hook usage
     const { loadingState, setLoadingState, appError: error, setAppError: setError } = useAppCore();
     const { history, setHistory, toggleFavorite } = useMasterTools();
     const [filters, setFilters] = useState<MasterToolFiltersState>(initialFiltersState);

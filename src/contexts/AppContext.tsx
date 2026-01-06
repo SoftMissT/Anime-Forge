@@ -1,4 +1,4 @@
-// contexts/AppContext.tsx
+// src/contexts/AppContext.tsx
 import React, { createContext, useContext, useState, ReactNode, useCallback, useMemo, useEffect } from 'react';
 import useLocalStorage from '../hooks/useLocalStorage';
 import { 
@@ -11,6 +11,7 @@ import type {
     AppView, AppError, LoadingState, FilterState, GeneratedItem, User, HistoryItem, MidjourneyParameters, GptParameters, GeminiParameters, AlchemyHistoryItem, MasterToolItem, CosmakerItem, FilmmakerItem
 } from '../types';
 import { Spinner } from '../components/ui/Spinner';
+import { supabase } from '../lib/supabaseClient';
 
 // ===== INITIAL STATES =====
 const initialFilters: FilterState = {
@@ -119,10 +120,11 @@ export const useAppCore = () => {
   return context;
 };
 
-// ===== AUTH CONTEXT =====
+// ===== AUTH CONTEXT (Supabase) =====
 interface AuthContextType {
   isAuthenticated: boolean;
   user: User | null;
+  sessionToken: string | null;
   handleLoginClick: () => void;
   handleLogout: () => void;
   isDataLoading: boolean; 
@@ -132,63 +134,96 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
+    const [sessionToken, setSessionToken] = useState<string | null>(null);
     const { setAppError } = useAppCore();
     const [isAuthLoading, setAuthLoading] = useState(true);
-    const [isDataLoading, setDataLoading] = useState(true);
+    const [isDataLoading, setDataLoading] = useState(false);
 
-    // Check for user session from cookie on initial load
     useEffect(() => {
-        const checkUserSession = async () => {
-            try {
-                const res = await fetch('/api/auth/me');
-                if (res.ok) {
-                    const data = await res.json();
-                    setUser(data.user);
-                }
-            } catch (error) {
-                console.error("Failed to fetch user session:", error);
-            } finally {
-                setAuthLoading(false);
+        // Safe check for supabase instance
+        if (!supabase) {
+            console.warn("Supabase client not initialized. Auth disabled.");
+            setAuthLoading(false);
+            return;
+        }
+
+        // Check for existing session
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session?.user) {
+                const mappedUser: User = {
+                    id: session.user.id,
+                    username: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'Viajante',
+                    avatar: session.user.user_metadata?.avatar_url || 'https://i.imgur.com/M9BDKmO.png',
+                };
+                setUser(mappedUser);
+                setSessionToken(session.access_token);
             }
-        };
-        checkUserSession();
+            setAuthLoading(false);
+        });
+
+        // Listen for auth changes
+        const {
+            data: { subscription },
+        } = supabase.auth.onAuthStateChange((_event, session) => {
+            if (session?.user) {
+                 const mappedUser: User = {
+                    id: session.user.id,
+                    username: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'Viajante',
+                    avatar: session.user.user_metadata?.avatar_url || 'https://i.imgur.com/M9BDKmO.png',
+                };
+                setUser(mappedUser);
+                setSessionToken(session.access_token);
+            } else {
+                setUser(null);
+                setSessionToken(null);
+            }
+            setAuthLoading(false);
+        });
+
+        return () => subscription.unsubscribe();
     }, []);
 
-    // Handle errors from Discord callback redirect
-    useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
-        const errorParam = params.get('error');
-        if (errorParam) {
-            setAppError({ message: "Falha na Autenticação", details: decodeURIComponent(errorParam) });
-            // Clean up the URL
-            window.history.replaceState({}, document.title, window.location.pathname);
-        }
-    }, [setAppError]);
-
     const handleLoginClick = useCallback(async () => {
+        if (!supabase) {
+            setAppError({ message: "Serviço de autenticação indisponível." });
+            return;
+        }
         try {
-            const res = await fetch('/api/auth/discord/url');
-            const { url } = await res.json();
-            window.location.href = url;
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: 'discord',
+                options: {
+                    redirectTo: window.location.origin,
+                },
+            });
+            if (error) throw error;
         } catch (error: any) {
-            setAppError({ message: "Não foi possível obter a URL de login do Discord.", details: error.message });
+            setAppError({ message: "Falha na Autenticação", details: error.message });
         }
     }, [setAppError]);
 
     const handleLogout = useCallback(async () => {
-        await fetch('/api/auth/logout');
+        if (supabase) {
+            await supabase.auth.signOut();
+        }
         setUser(null);
+        setSessionToken(null);
     }, []);
 
     const value = useMemo(() => ({
-        isAuthenticated: !!user, user, handleLoginClick, handleLogout, isDataLoading, setDataLoading
-    }), [user, handleLoginClick, handleLogout, isDataLoading]);
+        isAuthenticated: !!user, 
+        user, 
+        sessionToken,
+        handleLoginClick, 
+        handleLogout, 
+        isDataLoading, 
+        setDataLoading
+    }), [user, sessionToken, handleLoginClick, handleLogout, isDataLoading]);
 
     if (isAuthLoading) {
         return (
             <div className="w-full h-screen flex flex-col items-center justify-center bg-gray-900 text-white">
                 <Spinner size="lg" />
-                <p className="mt-4 text-lg">Verificando sessão...</p>
+                <p className="mt-4 text-lg">Iniciando a Forja...</p>
             </div>
         );
     }
@@ -371,7 +406,7 @@ interface ForgeContextType {
 const ForgeContext = createContext<ForgeContextType | undefined>(undefined);
 
 export const ForgeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const { user, setDataLoading, isDataLoading } = useAuth();
+  const { user, sessionToken, setDataLoading, isDataLoading } = useAuth();
   const { setAppError } = useAppCore();
   const [filters, setFilters] = useState<FilterState>(initialFilters);
   const [history, setHistory] = useState<GeneratedItem[]>([]);
@@ -380,19 +415,19 @@ export const ForgeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
   useEffect(() => {
     const loadData = async () => {
-        if (user) {
+        if (user && sessionToken) {
             setDataLoading(true);
             try {
-                const { history: allHistory, favorites: allFavorites } = await fetchCreations();
+                const { history: allHistory, favorites: allFavorites } = await fetchCreations(sessionToken);
                 setHistory(allHistory as GeneratedItem[]);
                 setFavorites(allFavorites as GeneratedItem[]);
             } catch (err: any) {
-                setAppError({ message: "Erro ao carregar dados da Forja", details: err.message });
+                console.warn("Erro ao carregar dados, pode ser primeira sessão:", err.message);
+                // Non-blocking error for new users
             } finally {
                 setDataLoading(false);
             }
         } else {
-            // Clear data on logout
             setHistory([]);
             setFavorites([]);
             setSelectedItem(null);
@@ -400,7 +435,7 @@ export const ForgeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         }
     };
     loadData();
-  }, [user, setAppError, setDataLoading]);
+  }, [user, sessionToken, setAppError, setDataLoading]);
 
   const handleFilterChange = useCallback(<K extends keyof FilterState>(field: K, value: FilterState[K]) => {
       setFilters(prev => ({ ...prev, [field]: value }));
@@ -413,36 +448,36 @@ export const ForgeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   }, []);
 
   const deleteHistoryItem = useCallback(async (id: string) => {
-    if (!user) return;
+    if (!user || !sessionToken) return;
     setHistory(prev => prev.filter(item => item.id !== id));
     setFavorites(prev => prev.filter(item => item.id !== id));
     try {
-        await deleteCreationById(id);
+        await deleteCreationById(id, sessionToken);
     } catch (err: any) {
         setAppError({ message: "Erro ao deletar item", details: err.message });
     }
-  }, [user, setAppError]);
+  }, [user, sessionToken, setAppError]);
 
   const clearHistory = useCallback(async () => {
-    if (!user) return;
+    if (!user || !sessionToken) return;
     setHistory([]);
     try {
-        await clearAllCreationsForUser();
+        await clearAllCreationsForUser(sessionToken);
     } catch (err: any) {
         setAppError({ message: "Erro ao limpar histórico", details: err.message });
     }
-  }, [user, setAppError]);
+  }, [user, sessionToken, setAppError]);
 
   const toggleFavorite = useCallback(async (item: GeneratedItem) => {
-    if (!user) return;
+    if (!user || !sessionToken) return;
     const isFav = favorites.some(f => f.id === item.id);
     setFavorites(prev => isFav ? prev.filter(f => f.id !== item.id) : [item, ...prev]);
     try {
-        await updateCreationFavoriteStatus(item, !isFav);
+        await updateCreationFavoriteStatus(item, !isFav, sessionToken);
     } catch (err: any) {
         setAppError({ message: "Erro ao atualizar favoritos", details: err.message });
     }
-  }, [user, favorites, setAppError]);
+  }, [user, sessionToken, favorites, setAppError]);
   
   const value = useMemo(() => ({
     filters, handleFilterChange, resetFilters, history, addHistoryItem,

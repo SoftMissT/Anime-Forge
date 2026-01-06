@@ -4,8 +4,8 @@ import { CollapsibleSection } from '../../components/ui/CollapsibleSection';
 import { Select } from '../../components/ui/Select';
 import { Switch } from '../../components/ui/Switch';
 import { TextArea } from '../../components/ui/TextArea';
-// FIX: Added missing constants
-import { TECHNIQUE_TYPES, BASE_ELEMENTS, TECHNIQUE_COMPLEXITY } from '../../constants';
+// FIX: Use absolute import for constants
+import { TECHNIQUE_TYPES, BASE_ELEMENTS, TECHNIQUE_COMPLEXITY } from '@/constants';
 import type { TechniqueFiltersState } from '../TechniquesInterface';
 import { SelectOption } from '../../types';
 
@@ -69,7 +69,6 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ({ filters, setFilters,
                        <Switch 
                             label="Gerar Usuário Notável"
                             checked={filters.generateNotableUser}
-                            // FIX: pass boolean value from event
                             onChange={(e) => updateFilter('generateNotableUser', e.target.checked)}
                        />
                     </div>
@@ -81,7 +80,6 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ({ filters, setFilters,
                     className="w-full" 
                     size="lg" 
                     onClick={onGenerate}
-                    // FIX: Added isLoading prop
                     isLoading={isLoading}
                 >
                     {isLoading ? 'Criando...' : 'Gerar Técnica'}

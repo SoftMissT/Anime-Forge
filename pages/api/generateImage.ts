@@ -2,10 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { GoogleGenAI, Modality } from '@google/genai';
 import { supabase, supabaseInitializationError } from '../../lib/supabaseClient';
-import { getTursoClient } from '../../lib/server/turso';
-import { getCloudinaryUploader, cloudinaryInitializationError } from '../../lib/server/cloudinary';
-import { imagekit, imagekitInitializationError } from '../../lib/server/imagekit';
-import type { User, GenerateImageRequest, Category, GeneratedItem } from '../../types';
+import type { GenerateImageRequest, GeneratedItem } from '../../types';
 
 const getUserGeminiKey = async (userId: string): Promise<string | null> => {
     if (!supabase) return null;
@@ -16,9 +13,6 @@ const getUserGeminiKey = async (userId: string): Promise<string | null> => {
     }
     return data?.gemini_api_key;
 };
-
-// Categorias que serão salvas no ImageKit
-const IMAGEKIT_CATEGORIES: Category[] = ['Arma', 'Acessório', 'Inimigo/Oni', 'Local/Cenário'];
 
 export default async function handler(
   req: NextApiRequest,
@@ -32,16 +26,8 @@ export default async function handler(
         return res.status(405).json({ message: 'Method Not Allowed' });
     }
 
-    let db;
     try {
-        db = await getTursoClient();
-    } catch (e: any) {
-        return res.status(503).json({ message: e.message, details: e.message });
-    }
-
-    try {
-        const { prompt, user, creationId, category, sourceImage } = req.body as GenerateImageRequest;
-        const isForjaMode = creationId && category;
+        const { prompt, user, sourceImage } = req.body as GenerateImageRequest;
 
         if (!user || !user.id) return res.status(401).json({ message: 'Autenticação de usuário é necessária.' });
         if (!prompt) return res.status(400).json({ message: 'O prompt é obrigatório.' });
@@ -66,7 +52,7 @@ export default async function handler(
         }
         parts.push({ text: prompt });
 
-        // Etapa 1: Gerar a imagem com Gemini
+        // Gerar a imagem com Gemini
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash-image',
             contents: { parts },
@@ -82,63 +68,8 @@ export default async function handler(
 
         const generatedImageB64 = firstPart.inlineData.data;
 
-        // Modo Cosmaker: apenas retorna a imagem
-        if (!isForjaMode) {
-            return res.status(200).json({ image: generatedImageB64 });
-        }
-
-        // Modo Forja: faz upload e atualiza o DB
-        const uploaderType = IMAGEKIT_CATEGORIES.includes(category) ? 'imagekit' : 'cloudinary';
-        let uploadResult;
-        let imageUrl: string | undefined;
-        let imagePublicId: string | undefined;
-
-        // Etapa 2: Fazer upload para o CDN correto
-        if (uploaderType === 'imagekit') {
-            if (imagekitInitializationError) throw new Error(imagekitInitializationError);
-            if (!imagekit) throw new Error('Cliente ImageKit não foi inicializado.');
-            uploadResult = await imagekit.upload({
-                file: generatedImageB64,
-                fileName: `${creationId}.jpg`,
-                folder: `/kimetsu-forge/${category}`,
-            });
-            imageUrl = uploadResult.url;
-            imagePublicId = uploadResult.fileId;
-        } else { // Cloudinary
-            if (cloudinaryInitializationError) throw new Error(cloudinaryInitializationError);
-            const uploader = getCloudinaryUploader();
-            uploadResult = await uploader.upload(`data:image/jpeg;base64,${generatedImageB64}`, {
-                public_id: creationId,
-                folder: `kimetsu-forge/${category}`,
-                overwrite: true,
-            });
-            imageUrl = uploadResult.secure_url;
-            imagePublicId = uploadResult.public_id;
-        }
-
-        // Etapa 3: Atualizar o item no banco de dados (Turso)
-        const { rows } = await db.execute({
-            sql: 'SELECT content FROM creations WHERE id = ? AND userId = ?',
-            args: [creationId, user.id]
-        });
-
-        if (rows.length === 0) throw new Error('Criação não encontrada ou acesso negado.');
-        
-        const currentContent = JSON.parse(rows[0].content as string);
-        const updatedContent = { ...currentContent, imageUrl, imagePublicId, imageProvider: uploaderType };
-
-        await db.execute({
-            sql: 'UPDATE creations SET content = ? WHERE id = ?',
-            args: [JSON.stringify(updatedContent), creationId]
-        });
-
-        const updatedItem: GeneratedItem = {
-            id: creationId,
-            userId: user.id,
-            ...updatedContent
-        };
-        
-        res.status(200).json({ updatedItem });
+        // Retornar a imagem diretamente. Upload para CDN foi removido.
+        res.status(200).json({ image: generatedImageB64 });
 
     } catch (error: any) {
         console.error("Error in /api/generateImage:", error);

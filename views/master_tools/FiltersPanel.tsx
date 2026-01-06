@@ -4,8 +4,8 @@ import { CollapsibleSection } from '../../components/ui/CollapsibleSection';
 import { Select } from '../../components/ui/Select';
 import { Slider } from '../../components/ui/Slider';
 import { TextArea } from '../../components/ui/TextArea';
-// FIX: Added missing constants
-import { MASTER_TOOL_TYPES, NAME_CATEGORIES, PLOT_HOOK_GENRES, ONOMATOPOEIA_TYPES } from '../../constants';
+// FIX: Use absolute import for constants and fix missing imports
+import { MASTER_TOOL_TYPES, NAME_CATEGORIES, PLOT_HOOK_GENRES, ONOMATOPOEIA_TYPES } from '@/constants';
 import type { MasterToolFiltersState } from '../MasterToolsInterface';
 import { SelectOption } from '../../types';
 
@@ -102,7 +102,6 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ({ filters, setFilters,
                     className="w-full" 
                     size="lg" 
                     onClick={onGenerate}
-                    // FIX: Added isLoading prop
                     isLoading={isLoading}
                 >
                     {isLoading ? 'Gerando...' : 'Usar Ferramenta'}

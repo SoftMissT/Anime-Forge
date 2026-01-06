@@ -9,7 +9,8 @@ import { analytics } from '../lib/analytics';
 import type { GeneratedItem, Category } from '../types';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import { Button } from '../components/ui/Button';
-import { FilterIcon } from '../components/icons';
+// FIX: Ensure correct import from icons index
+import { FilterIcon } from '../components/icons/index';
 import { Modal } from '../components/ui/Modal';
 import { HeroBanner } from '../components/HeroBanner';
 

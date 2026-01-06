@@ -1,14 +1,11 @@
 import React, { useState, useCallback } from 'react';
-// FIX: Replaced non-existent hooks with correct ones from AppContext
 import { useAppCore, useForge } from '../contexts/AppContext';
 import { FiltersPanel } from './locations/FiltersPanel';
 import { ResultsPanel } from './locations/ResultsPanel';
-// FIX: Imported SelectOption from types.ts
 import type { SelectOption } from '../types';
-// FIX: Imported LocationItem from types.ts
 import type { LocationItem, GeneratedItem } from '../types';
-// FIX: Imported constants
-import { LOCATION_BIOMES, LOCATION_ATMOSPHERES } from '../constants';
+// FIX: Use absolute import for constants
+import { LOCATION_BIOMES, LOCATION_ATMOSPHERES } from '@/constants';
 
 export interface LocationFiltersState {
     prompt: string;
@@ -25,7 +22,6 @@ const initialFiltersState: LocationFiltersState = {
 };
 
 const LocationsInterface: React.FC = () => {
-    // FIX: Corrected hook usage
     const { loadingState, setLoadingState, appError: error, setAppError: setError } = useAppCore();
     const { history, addHistoryItem, toggleFavorite, setSelectedItem: openDetailModal } = useForge();
     const [filters, setFilters] = useState<LocationFiltersState>(initialFiltersState);

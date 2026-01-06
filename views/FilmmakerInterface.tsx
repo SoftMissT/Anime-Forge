@@ -1,14 +1,11 @@
 import React, { useState, useCallback, useEffect } from 'react';
-// FIX: Replaced non-existent hooks with correct ones from AppContext
 import { useAppCore, useFilmmaker } from '../contexts/AppContext';
 import { FiltersPanel } from './filmmaker/FiltersPanel';
 import { ResultsPanel } from './filmmaker/ResultsPanel';
-// FIX: Imported SelectOption from types.ts
 import type { SelectOption } from '../types';
-// FIX: Imported FilmmakerItem from types.ts
 import type { FilmmakerItem } from '../types';
-// FIX: Added missing constants
-import { VIDEO_ASPECT_RATIOS, VIDEO_RESOLUTIONS } from '../constants';
+// FIX: Use absolute import for constants
+import { VIDEO_ASPECT_RATIOS, VIDEO_RESOLUTIONS } from '@/constants';
 
 export interface FilmmakerFiltersState {
     prompt: string;
@@ -23,14 +20,12 @@ const initialFiltersState: FilmmakerFiltersState = {
 };
 
 const FilmmakerInterface: React.FC = () => {
-    // FIX: Corrected hook usage
     const { loadingState, setLoadingState, appError: error, setAppError: setError } = useAppCore();
     const { history, setHistory, toggleFavorite } = useFilmmaker();
     const [filters, setFilters] = useState<FilmmakerFiltersState>(initialFiltersState);
     const [loadingMessage, setLoadingMessage] = useState('');
 
     const handleGenerate = useCallback(async () => {
-        // FIX: Set a valid content type for loadingState
         setLoadingState({ active: true, content: 'video_generation' });
         setError(null);
 
@@ -67,7 +62,8 @@ const FilmmakerInterface: React.FC = () => {
             const newItem: FilmmakerItem = {
                 id: `filmmaker-${Date.now()}`,
                 prompt: filters.prompt,
-                description: description,
+                script: description,
+                videoPrompt: "Video prompt not generated via filters panel yet.",
                 isFavorite: false,
             };
             setHistory(prev => [newItem, ...prev]);
@@ -76,7 +72,6 @@ const FilmmakerInterface: React.FC = () => {
             console.error("Erro durante a geração de cena:", e);
             setError({ message: e.message || 'Ocorreu um erro desconhecido ao gerar a descrição da cena.' });
         } finally {
-             // FIX: Set a valid content type for loadingState
             setLoadingState({ active: false, content: 'generic' });
         }
     }, [filters, setHistory, setLoadingState, setError]);

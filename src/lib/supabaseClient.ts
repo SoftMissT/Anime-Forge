@@ -1,22 +1,40 @@
-// lib/supabaseClient.ts
+
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-let supabase: SupabaseClient | null = null;
-let supabaseInitializationError: string | null = null;
+// Helper seguro para obter variáveis de ambiente (suporta Vite e Next.js)
+const getEnvVar = (key: string) => {
+  if (typeof process !== 'undefined' && process.env && process.env[key]) {
+    return process.env[key];
+  }
+  if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env[key]) {
+    return import.meta.env[key];
+  }
+  return '';
+};
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY;
+const supabaseUrl = getEnvVar('NEXT_PUBLIC_SUPABASE_URL') || getEnvVar('VITE_SUPABASE_URL');
+const supabaseAnonKey = getEnvVar('NEXT_PUBLIC_SUPABASE_ANON_KEY') || getEnvVar('VITE_SUPABASE_ANON_KEY');
 
-if (!supabaseUrl || !supabaseServiceKey) {
-  supabaseInitializationError = 'As variáveis de ambiente do Supabase (SUPABASE_URL, SUPABASE_SERVICE_KEY) não estão configuradas.';
-  console.error('Erro ao inicializar Supabase Client:', supabaseInitializationError);
+let supabaseInstance: SupabaseClient | null = null;
+let initializationError: string | null = null;
+
+if (supabaseUrl && supabaseAnonKey) {
+  try {
+    supabaseInstance = createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true
+      },
+    });
+  } catch (error: any) {
+    console.error('Erro ao inicializar Supabase:', error);
+    initializationError = error.message;
+  }
 } else {
-  supabase = createClient(supabaseUrl, supabaseServiceKey, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  });
+  initializationError = "Chaves do Supabase não configuradas.";
+  console.warn(initializationError);
 }
 
-export { supabase, supabaseInitializationError };
+export const supabase = supabaseInstance;
+export const supabaseInitializationError = initializationError;

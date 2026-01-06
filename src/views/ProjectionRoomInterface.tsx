@@ -1,8 +1,4 @@
-// src/views/ProjectionRoomInterface.tsx
+// Deprecated file - replaced by src/views/FilmmakerInterface.tsx
 import React from 'react';
 import { FilmmakerInterface } from './FilmmakerInterface';
-
-export const ProjectionRoomInterface: React.FC = () => {
-    // A aba 'filmmaker' corresponde à interface de geração de vídeo
-    return <FilmmakerInterface />;
-};
+export const ProjectionRoomInterface = FilmmakerInterface;

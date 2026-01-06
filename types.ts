@@ -1,3 +1,5 @@
+import React from 'react';
+
 // types.ts
 
 // Core types for different generation categories

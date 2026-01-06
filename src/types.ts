@@ -1,7 +1,9 @@
+import React from 'react';
+
 // types.ts
 
 // Core types for different generation categories
-export type Category = 'Arma' | 'Acessório' | 'Caçador' | 'Inimigo/Oni' | 'Kekkijutsu' | 'Respiração' | 'Missões' | 'NPC' | 'Evento' | 'Local/Cenário' | 'Mitologia' | 'História Antiga' | 'Guerra de Clãs';
+export type Category = 'Arma' | 'Acessório' | 'Caçador' | 'Inimigo/Oni' | 'Kekkijutsu' | 'Respiração' | 'Missões' | 'NPC' | 'Evento' | 'Local/Cenário' | 'Mitologia' | 'História Antiga' | 'Guerra de Clãs' | 'Música/Poesia' | 'Prompt Visual' | 'Roteiro';
 
 export type Rarity = 'Comum' | 'Incomum' | 'Rara' | 'Épica' | 'Lendária';
 export type Tematica = 'Aleatória' | 'Período Edo (Japão Feudal)' | 'Medieval Fantasia' | 'Steampunk' | 'Cyberpunk' | 'Pós-apocalíptico' | 'Moderno' | 'Tempos Atuais' | 'Futurista (Sci-Fi)' | 'Biopunk' | 'Shogunato Cibernético' | 'Faroeste Sombrio' | 'Noir Gótico' | 'Piratas das Profundezas' | 'Samurai Fantasma' | 'Cripto-Punk' | 'Viagem no Tempo (Era Meiji)' | 'A Era dos Caçadores' | 'O Caminho do Guerreiro' | 'O Ritual da Lua Negra' | 'DOS CAÇADORES DE SOMBRAS' | '⚔️ DOS DEUSES CAÍDOS' | '🕵️‍♂️ DO JAZZ & OCULTISMO' | '⚗️ DA REVOLUÇÃO INDUSTRIAL OCULTA' | '🤠 VELHO OESTE SOLAR' | '🏴‍☠️ DOS IMPÉRIOS FLUTUANTES' | '🏜️ DO SAARA ETERNO' | '🎭 DOS CINCO REINOS (WUXIA/XIANXIA)' | '🧙 DA ALVORADA ANCESTRAL' | '🧬 DO JARDIM PROIBIDO (BIOPUNK ORGÂNICO)' | 'Neon-Noir Megacidade' | '💠 DA INFOCRACIA' | '🌃 DO RENASCIMENTO SOMBRIO' | '🌃 DO SUBMUNDO NOTURNO' | 'Mythpunk Amazônico' | 'Ártico Steampunk' | '🌌 DOS CINZÁRIOS (PÓS-APOCALÍPTico MÍSTICO)' | '🧟 DA QUEDA DOS REINOS' | '🤖 DA SINGULARIDADE (PÓS-HUMANA)';
@@ -34,21 +36,14 @@ interface BaseGeneratedItem {
   raridade: Rarity;
   nivel_sugerido: number;
   ganchos_narrativos: string[] | string;
-  imagePromptDescription?: string;
-  videoPromptDescription?: string;
+  imagePromptDescription?: string; // Mantido como texto do prompt
+  videoPromptDescription?: string; // Mantido como texto do prompt
   provenance?: ProvenanceEntry[];
   _validation?: ValidationMetadata;
   is_favorite?: boolean;
-  imageUrl?: string | null;
-  imagePublicId?: string | null;
-  imageBytes?: number | null;
+  // Campos de mídia direta (blob/url) removidos ou mantidos como null para compatibilidade legada se necessário
+  imageUrl?: string | null; 
   userId?: string;
-  dano?: string;
-  dados?: string;
-  tipo_de_dano?: string;
-  preco_sugerido?: number;
-  status_aplicado?: string;
-  efeitos_secundarios?: string;
 }
 
 export interface WeaponItem extends BaseGeneratedItem {
@@ -131,6 +126,9 @@ export interface FilterState {
   clanWarsScenario?: string;
   turnType?: 'Turno por Turno' | 'Tempo Real';
   simulationSpeed?: number;
+  // Bard filters
+  musicalStyle?: string;
+  lyricsTheme?: string;
 }
 
 // User Authentication
@@ -180,7 +178,7 @@ export type HistoryItem = GeneratedItem;
 export type FavoriteItem = GeneratedItem;
 
 // App Core UI types
-export type AppView = 'forge' | 'characters' | 'techniques' | 'locations' | 'conflicts' | 'master_tools' | 'alchemist' | 'cosmaker' | 'filmmaker' | 'unclassified';
+export type AppView = 'forge' | 'characters' | 'techniques' | 'locations' | 'conflicts' | 'master_tools' | 'alchemist' | 'cosmaker' | 'filmmaker' | 'bard';
 export type View = AppView;
 
 export interface AppError {
@@ -193,7 +191,7 @@ export interface AppError {
 
 export interface LoadingState {
   active: boolean;
-  content?: 'forge' | 'clan_wars' | 'master_tools' | 'generic' | 'alchemy' | 'image_edit' | 'video_generation';
+  content?: 'forge' | 'clan_wars' | 'master_tools' | 'generic' | 'alchemy' | 'image_edit' | 'video_generation' | 'bard';
   context?: any;
 }
 
@@ -208,6 +206,7 @@ export interface SelectOption {
     label: string;
 }
 
+// ... existing interfaces ...
 export interface ConflictItem {
     id: string;
     name: string;
@@ -271,14 +270,25 @@ export interface AlchemistItem {
 export interface CosmakerItem {
     id: string;
     prompt: string;
-    imageUrl: string;
+    // Removido imageUrl real, agora foca no prompt gerado e descrição visual
+    visualDescription: string;
+    generatedPrompt: string; 
     isFavorite: boolean;
 }
 
 export interface FilmmakerItem {
     id: string;
     prompt: string;
-    description: string;
+    script: string;
+    videoPrompt: string; // Prompt otimizado para Veo/Sora
+    isFavorite: boolean;
+}
+
+export interface BardItem {
+    id: string;
+    title: string;
+    lyrics: string;
+    style: string;
     isFavorite: boolean;
 }
 
@@ -333,13 +343,8 @@ export interface AlchemyHistoryItem {
     outputs: PromptGenerationResult;
 }
 
-// Video Generation Types
 export interface VideoGenerationParams {
     prompt: string;
-    image?: {
-        data: string; // base64
-        mimeType: string;
-    };
     config: {
         resolution: '720p' | '1080p';
         aspectRatio: '16:9' | '9:16';
@@ -349,18 +354,13 @@ export interface VideoGenerationParams {
 
 export interface VideoOperationStatus {
     done: boolean;
-    videoUrl?: string;
+    videoUrl?: string; // Opcional, agora serve mais para metadados se necessário
     error?: string;
-    operation: any; // The operation object from the SDK
+    operation: any; 
 }
 
 export interface GenerateImageRequest {
     prompt: string;
     user: User;
-    creationId?: string;
-    category?: Category;
-    sourceImage?: {
-        data: string; // base64
-        mimeType: string;
-    };
+    // Removido sourceImage
 }

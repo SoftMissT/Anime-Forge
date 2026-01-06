@@ -1,0 +1,1 @@
+// File deleted (not needed for Next.js)

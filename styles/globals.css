@@ -1,0 +1,357 @@
+/* styles/globals.css */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Yuji+Syuku:wght@400;700&family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ═══════════════════════════════════════════════════════════ */
+/* 🎨 CSS VARIABLES - DESIGN SYSTEM */
+/* ═══════════════════════════════════════════════════════════ */
+
+:root {
+  /* Backgrounds */
+  --bg-primary: #0a0a0c;
+  --bg-secondary: #1a1a1f;
+  --bg-tertiary: rgba(20, 20, 20, 0.8);
+  --bg-card: #141417;
+  
+  /* Text */
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #64748b;
+  
+  /* Borders & Dividers */
+  --border-color: rgba(255, 255, 255, 0.1);
+  --border-subtle: rgba(255, 255, 255, 0.05);
+}
+
+/* ═══════════════════════════════════════════════════════════ */
+/* 🌐 BASE STYLES & THEMES */
+/* ═══════════════════════════════════════════════════════════ */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body, #root { height: 100%; }
+body { font-family: 'Inter', 'Noto Sans JP', sans-serif; background: var(--bg-primary); color: var(--text-primary); overflow: hidden; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+.view-forge { --accent-start: #1C3E5A; --accent-end: #4A90E2; }
+.view-characters { --accent-start: #E65100; --accent-end: #FF9800; }
+.view-techniques { --accent-start: #F9A825; --accent-end: #FDD835; }
+.view-locations { --accent-start: #1B5E20; --accent-end: #4CAF50; }
+.view-conflicts { --accent-start: #8B0000; --accent-end: #FF4444; }
+.view-master_tools { --accent-start: #4A148C; --accent-end: #7B1FA2; }
+.view-alchemist { --accent-start: #9B4DCA; --accent-end: #1A0033; }
+.view-cosmaker { --accent-start: #E91E63; --accent-end: #880E4F; }
+.view-filmmaker { --accent-start: #0284c7; --accent-end: #06b6d4; }
+
+
+.font-japanese { font-family: 'Yuji Syuku', serif; }
+.font-mono { font-family: 'JetBrains Mono', monospace; }
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    position: relative;
+}
+
+.main-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    z-index: 1;
+}
+
+.app-main-view {
+    flex: 1;
+    min-height: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════ */
+/* 🧩 CUSTOM COMPONENT STYLES */
+/* ═══════════════════════════════════════════════════════════ */
+
+@layer components {
+  .multiselect-button {
+    @apply w-full flex items-center justify-between bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-md py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-[var(--accent-start)] focus:border-[var(--accent-start)] transition-all duration-200;
+  }
+  .multiselect-button:hover {
+    @apply border-[var(--accent-start)];
+  }
+
+  .range-slider {
+    @apply bg-gray-600; /* Track color */
+  }
+  .range-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 1rem; height: 1rem;
+    border-radius: 9999px;
+    background: var(--accent-start);
+    transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+  }
+  .range-slider:hover::-webkit-slider-thumb {
+    transform: scale(1.2);
+    box-shadow: 0 0 8px 0 var(--accent-start);
+  }
+   .range-slider::-moz-range-thumb {
+    width: 1rem; height: 1rem;
+    border-radius: 9999px;
+    background: var(--accent-start);
+    border: none;
+    transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+  }
+  .range-slider:hover::-moz-range-thumb {
+    transform: scale(1.2);
+    box-shadow: 0 0 8px 0 var(--accent-start);
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════ */
+/* 🎯 HEADER & TABS STYLES */
+/* ═══════════════════════════════════════════════════════════ */
+
+.app-header {
+    position: relative;
+    height: 88px;
+    background: rgba(10, 10, 12, 0.8);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    flex-shrink: 0;
+    z-index: 50;
+}
+.header-controls { display: flex; align-items: center; gap: 16px; }
+.header-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    color: #9ca3af;
+    border-radius: 9999px;
+    transition: all 0.2s ease;
+}
+.header-icon-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+.user-avatar-btn { width: 40px; height: 40px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: border-color 0.2s; }
+.user-avatar-btn:hover { border-color: var(--accent-start); }
+
+.tab-navigation-container {
+    display: flex;
+    justify-content: center;
+}
+
+.tab-button {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 44px;
+    padding: 0 16px;
+    gap: 8px;
+    border-radius: 10px;
+    color: var(--text-muted);
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease-out;
+    outline: none;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.tab-button-text {
+    white-space: nowrap;
+}
+
+.tab-button:hover {
+    color: var(--text-primary);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.tab-button:focus-visible {
+    box-shadow: 0 0 0 2px var(--bg-primary), 0 0 0 4px var(--accent-start);
+}
+
+.tab-button.is-active {
+    color: var(--text-primary);
+}
+
+.active-tab-glow {
+    position: absolute;
+    inset: 0;
+    border-radius: 10px;
+    background: linear-gradient(to right, var(--accent-start), var(--accent-end));
+    box-shadow: 0 0 16px -2px var(--accent-start), 0 0 8px -4px var(--accent-end);
+    opacity: 0.8;
+    z-index: -1;
+}
+
+/* Fix dropdown overlap */
+.multiselect-dropdown {
+    position: absolute;
+    z-index: 100; /* Ensure this is high enough */
+    width: 100%;
+    margin-top: 4px;
+    background-color: #1f2937;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.filter-panel-body {
+    /* overflow-y-auto is needed for scrolling, but it creates a stacking context. */
+    /* The dropdown needs to be positioned relative to the viewport or a higher parent */
+    /* A high z-index on the dropdown itself is the simplest solution. */
+    position: relative; /* This helps manage z-index within the panel */
+}
+
+/* ═══════════════════════════════════════════════════════════ */
+/* 🌌 ANIMATED BACKGROUNDS & PARTICLES */
+/* ═══════════════════════════════════════════════════════════ */
+
+.app-background {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background-color: var(--bg-primary);
+}
+
+/* --- CONFLITOS (Flames/Embers) --- */
+.view-conflicts .app-background {
+  background: radial-gradient(ellipse at bottom, rgba(139, 0, 0, 0.2) 0%, var(--bg-primary) 60%);
+}
+.ember-container { position: absolute; inset: 0; overflow: hidden; }
+.ember {
+  position: absolute;
+  bottom: -20px;
+  background-color: #ffc94d;
+  border-radius: 50%;
+  opacity: 0;
+  animation: floatUp 10s infinite linear;
+  box-shadow: 0 0 5px #ffc94d, 0 0 10px #ffc94d, 0 0 15px #f97316;
+}
+@keyframes floatUp {
+  0% { transform: translateY(0); opacity: 0; }
+  10%, 90% { opacity: 0.8; }
+  100% { transform: translateY(-100vh) translateX(calc(var(--wind-direction, 0) * 50px)); opacity: 0; }
+}
+
+/* --- FORJA (Sparks) --- */
+.view-forge .app-background {
+  background: radial-gradient(ellipse at bottom, rgba(28, 62, 90, 0.15) 0%, var(--bg-primary) 60%);
+}
+.spark-container { position: absolute; inset: 0; overflow: hidden; }
+.spark {
+  position: absolute;
+  bottom: 0;
+  width: 2px;
+  background-color: #ffecb3;
+  opacity: 0;
+  animation: sparkRise 3s infinite ease-out;
+  box-shadow: 0 0 4px #ffecb3, 0 0 8px #ffecb3;
+}
+@keyframes sparkRise {
+  0% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-80vh) scale(0); opacity: 0; }
+}
+
+/* --- MESTRE (Runes) --- */
+.view-master_tools .app-background {
+  background: radial-gradient(circle at 50% 50%, rgba(74, 20, 140, 0.2) 0%, var(--bg-primary) 50%);
+}
+.rune-container { position: absolute; inset: 0; overflow: hidden; }
+.rune {
+  position: absolute;
+  font-family: 'Yuji Syuku', serif;
+  color: var(--accent-end);
+  opacity: 0;
+  animation: runeFloat 15s infinite ease-in-out;
+  text-shadow: 0 0 8px var(--accent-end);
+}
+@keyframes runeFloat {
+  0%, 100% { transform: translateY(20px) rotate(0deg); opacity: 0; }
+  10%, 90% { opacity: 0.6; }
+  50% { transform: translateY(-20px) rotate(180deg); opacity: 0.2; }
+}
+
+/* --- MUNDO (Leaves) --- */
+.view-locations .app-background {
+  background: linear-gradient(to top, var(--bg-primary) 0%, #112c1a 100%);
+}
+.leaf-container { position: absolute; inset: 0; overflow: hidden; }
+.leaf {
+  position: absolute;
+  top: -20px;
+  background-color: var(--accent-end);
+  border-radius: 0 50% 0 50%;
+  opacity: 0;
+  animation: fallAndSway 12s infinite linear;
+}
+@keyframes fallAndSway {
+  0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.7; }
+  100% { transform: translateY(100vh) translateX(100px) rotate(360deg); opacity: 0; }
+}
+
+/* --- PERSONAGENS (Aura) --- */
+.view-characters .app-background::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 50%, rgba(230, 81, 0, 0.15) 0%, transparent 60%);
+  animation: pulseAura 8s infinite ease-in-out;
+}
+@keyframes pulseAura {
+  0%, 100% { transform: scale(0.9); opacity: 0.8; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+
+/* --- TÉCNICAS (Lightning) --- */
+.view-techniques .app-background {
+  background-color: #0c0a09;
+}
+.lightning-container { position: absolute; inset: 0; overflow: hidden; }
+.lightning-bolt {
+  position: absolute;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  background: linear-gradient(var(--accent-end), transparent);
+  opacity: 0;
+  transform: skewX(-20deg);
+  animation: flash 6s infinite steps(1);
+}
+@keyframes flash {
+  0%, 49.9%, 50.2%, 74.9%, 75.2%, 100% { opacity: 0; }
+  50%, 75% { opacity: 0.8; }
+}
+
+/* --- ALQUIMIA (Bubbles) --- */
+.view-alchemist .app-background {
+  background: radial-gradient(circle at 50% 50%, rgba(107, 27, 154, 0.2) 0%, var(--bg-primary) 50%);
+}
+.bubble-container { position: absolute; inset: 0; overflow: hidden; }
+.bubble {
+  position: absolute;
+  bottom: -50px;
+  background-color: rgba(155, 77, 202, 0.15);
+  border-radius: 50%;
+  animation: bubbleRise 15s infinite ease-in;
+  border: 1px solid rgba(155, 77, 202, 0.3);
+}
+@keyframes bubbleRise {
+  0% { transform: translateY(0) scale(0.8); opacity: 0; }
+  10% { opacity: 0.7; }
+  90% { opacity: 0.7; }
+  100% { transform: translateY(-105vh) scale(1.2); opacity: 0; }
+}

@@ -1,14 +1,11 @@
 import React, { useState, useCallback } from 'react';
-// FIX: Replaced non-existent hooks with correct ones from AppContext
 import { useAppCore, useForge } from '../contexts/AppContext';
 import { FiltersPanel } from './techniques/FiltersPanel';
 import { ResultsPanel } from './techniques/ResultsPanel';
-// FIX: Imported SelectOption from types.ts
 import type { SelectOption } from '../types';
-// FIX: Imported TechniqueItem from types.ts
 import type { TechniqueItem, GeneratedItem } from '../types';
-// FIX: Imported constants
-import { TECHNIQUE_TYPES, BASE_ELEMENTS, TECHNIQUE_COMPLEXITY } from '../constants';
+// FIX: Use absolute import for constants
+import { TECHNIQUE_TYPES, BASE_ELEMENTS, TECHNIQUE_COMPLEXITY } from '@/constants';
 
 export interface TechniqueFiltersState {
     prompt: string;
@@ -27,7 +24,6 @@ const initialFiltersState: TechniqueFiltersState = {
 };
 
 const TechniquesInterface: React.FC = () => {
-    // FIX: Corrected hook usage
     const { loadingState, setLoadingState, appError: error, setAppError: setError } = useAppCore();
     const { history, addHistoryItem, toggleFavorite, setSelectedItem: openDetailModal } = useForge();
     const [filters, setFilters] = useState<TechniqueFiltersState>(initialFiltersState);

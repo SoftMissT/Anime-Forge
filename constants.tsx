@@ -1,5 +1,3 @@
-
-
 import type { Category, Rarity, FilterState, ViewItem, SelectOption } from './types';
 import { 
     AnvilIcon, 
@@ -137,7 +135,6 @@ const METALS_DATA: { value: string, label: string }[] = [
     { value: 'Hihiirokane', label: 'Hihi\'irokane' },
 ];
 
-// FIX: Exported VIEWS constant.
 export const VIEWS: ViewItem[] = [
     { id: 'forge', label: 'Forja', icon: AnvilIcon },
     { id: 'conflicts', label: 'Conflitos', icon: ConflictsIcon },
@@ -166,6 +163,8 @@ export const CATEGORIES: { value: Category, label: string }[] = [
     { value: 'Guerra de Clãs', label: '⚔️ Guerra de Clãs' },
 ];
 
+export const FORGE_CATEGORIES = CATEGORIES;
+
 export const RARITIES: (Rarity | 'Aleatória')[] = ['Aleatória', 'Comum', 'Incomum', 'Rara', 'Épica', 'Lendária'];
 
 export const LEVELS = Array.from({ length: 20 }, (_, i) => i + 1);
@@ -190,7 +189,21 @@ export const BLADE_COLOR_OPTIONS = BLADE_COLOR_DATA.map(c => ({ value: c.nome, l
 export const METAL_OPTIONS = METALS_DATA.map(m => ({ value: m.value, label: m.label }));
 export const TONALIDADE_OPTIONS = TONALIDADE_DATA.map(t => ({ value: t.nome, label: t.nome }));
 
-// FIX: Exported various constants for different views.
+export const INITIAL_FILTER_STATE: FilterState = {
+  category: 'Arma',
+  rarity: 'Aleatória',
+  level: 1,
+  quantity: 1,
+  promptModifier: '',
+  thematics: [],
+  country: 'Japão',
+  era: 'Aleatório',
+  tonalidade: 'Sombria',
+};
+
+// --- VIEW SPECIFIC CONSTANTS ---
+
+// Conflicts
 export const CONFLICT_SCALES: SelectOption[] = [
     { value: 0, label: 'Duelo Pessoal' },
     { value: 25, label: 'Escaramuça Local' },
@@ -201,18 +214,22 @@ export const CONFLICT_SCALES: SelectOption[] = [
 export const CONFLICT_TYPES: SelectOption[] = [{ value: 'defesa', label: 'Defesa' }, { value: 'investigacao', label: 'Investigação' }];
 export const FACTIONS: SelectOption[] = [{ value: 'cazadores', label: 'Caçadores de Onis' }, { value: 'onis', label: 'Onis' }];
 
+// Characters
 export const CHARACTER_AFFILIATIONS: SelectOption[] = [{ value: 'demon_slayer', label: 'Caçador de Oni' }, { value: 'demon', label: 'Oni' }];
 export const DEMON_SLAYER_RANKS: SelectOption[] = [{ value: 'mizunoto', label: 'Mizunoto' }, { value: 'hashira', label: 'Hashira' }];
 export const DEMON_RANKS: SelectOption[] = [{ value: 'inferior', label: 'Lua Inferior' }, { value: 'superior', label: 'Lua Superior' }];
 export const PERSONALITY_TRAITS: SelectOption[] = [{ value: 'corajoso', label: 'Corajoso' }, { value: 'calmo', label: 'Calmo' }];
 
+// Techniques
 export const TECHNIQUE_TYPES: SelectOption[] = [{ value: 'respiracao', label: 'Respiração' }, { value: 'kekkijutsu', label: 'Kekkijutsu' }];
 export const BASE_ELEMENTS: SelectOption[] = [{ value: 'agua', label: 'Água' }, { value: 'fogo', label: 'Fogo' }];
 export const TECHNIQUE_COMPLEXITY: SelectOption[] = [{ value: 'simples', label: 'Simples' }, { value: 'medio', label: 'Médio' }, { value: 'complexo', label: 'Complexo' }];
 
+// Locations
 export const LOCATION_BIOMES: SelectOption[] = [{ value: 'floresta', label: 'Floresta' }, { value: 'montanha', label: 'Montanha' }];
 export const LOCATION_ATMOSPHERES: SelectOption[] = [{ value: 'misteriosa', label: 'Misteriosa' }, { value: 'pacifica', label: 'Pacífica' }];
 
+// Master Tools
 export const MASTER_TOOL_TYPES: SelectOption[] = [
     { value: 'name_generator', label: 'Gerador de Nomes' },
     { value: 'plot_hook_generator', label: 'Gerador de Ganchos de Trama' },
@@ -226,32 +243,22 @@ export const NAME_CATEGORIES: SelectOption[] = [
 export const PLOT_HOOK_GENRES: SelectOption[] = [{ value: 'misterio', label: 'Mistério' }, { value: 'acao', label: 'Ação' }];
 export const ONOMATOPOEIA_TYPES: SelectOption[] = [{ value: 'combate', label: 'Combate' }, { value: 'natureza', label: 'Natureza' }];
 
-export const FORGE_CATEGORIES: SelectOption[] = CATEGORIES.map(c => ({ value: c.value, label: c.label }));
-export const DETAIL_LEVELS: SelectOption[] = [{ value: 'baixo', label: 'Baixo' }, { value: 'medio', label: 'Médio' }, { value: 'alto', label: 'Alto' }];
-export const CREATIVE_STYLES: SelectOption[] = [{ value: 'sombrio', label: 'Sombrio' }, { value: 'heroico', label: 'Heróico' }];
-
+// Alchemist
 export const AI_MODELS: SelectOption[] = [
     { value: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash' },
     { value: 'gemini-2.5-pro', label: 'Gemini 2.5 Pro' },
 ];
 
+// Cosmaker
 export const COSMAKER_CHARACTER_TYPES: SelectOption[] = [{ value: 'cacador', label: 'Caçador' }, { value: 'oni', label: 'Oni' }];
 export const COSMAKER_ART_STYLES: SelectOption[] = [{ value: 'anime', label: 'Anime' }, { value: 'realista', label: 'Realista' }];
 export const COSMAKER_COLORS: SelectOption[] = [{ value: 'vermelho', label: 'Vermelho' }, { value: 'azul', label: 'Azul' }];
 export const COSMAKER_MATERIALS: SelectOption[] = [{ value: 'seda', label: 'Seda' }, { value: 'couro', label: 'Couro' }];
 
+// Filmmaker
 export const VIDEO_ASPECT_RATIOS: SelectOption[] = [{ value: '16:9', label: '16:9 (Widescreen)' }, { value: '9:16', label: '9:16 (Vertical)' }];
 export const VIDEO_RESOLUTIONS: SelectOption[] = [{ value: '720p', label: '720p (HD)' }, { value: '1080p', label: '1080p (Full HD)' }];
 
-// FIX: Exported INITIAL_FILTER_STATE.
-export const INITIAL_FILTER_STATE: FilterState = {
-  category: 'Arma',
-  rarity: 'Aleatória',
-  level: 1,
-  quantity: 1,
-  promptModifier: '',
-  thematics: [],
-  country: 'Japão',
-  era: 'Aleatório',
-  tonalidade: 'Sombria',
-};
+// Shared / Misc
+export const DETAIL_LEVELS: SelectOption[] = [{ value: 'baixo', label: 'Baixo' }, { value: 'medio', label: 'Médio' }, { value: 'alto', label: 'Alto' }];
+export const CREATIVE_STYLES: SelectOption[] = [{ value: 'sombrio', label: 'Sombrio' }, { value: 'heroico', label: 'Heróico' }];

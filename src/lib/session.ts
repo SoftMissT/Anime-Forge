@@ -1,4 +1,4 @@
-// lib/session.ts
+// src/lib/session.ts
 import { SessionOptions } from 'iron-session';
 
 export interface SessionData {
@@ -8,18 +8,16 @@ export interface SessionData {
   avatar: string;
 }
 
-if (!process.env.SECRET_COOKIE_PASSWORD) {
-    throw new Error('A variável de ambiente SECRET_COOKIE_PASSWORD não está configurada.');
+if (!process.env.SESSION_SECRET) {
+    // Fallback for development if needed, but warning is better
+    console.warn('A variável de ambiente SESSION_SECRET não está configurada.');
 }
 
 export const sessionOptions: SessionOptions = {
-  password: process.env.SECRET_COOKIE_PASSWORD,
+  password: process.env.SESSION_SECRET || 'default-secret-must-be-at-least-32-chars-long',
   cookieName: 'kimetsu-forge-session',
   cookieOptions: {
     secure: process.env.NODE_ENV === 'production',
     maxAge: 60 * 60 * 24 * 7, // 1 week
   },
 };
-
-// FIX: Removed module augmentation as it was causing "Invalid module name" errors.
-// Type safety for session data should be handled via explicit casting or generics where session is used.

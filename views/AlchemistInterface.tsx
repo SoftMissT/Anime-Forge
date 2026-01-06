@@ -1,14 +1,11 @@
 import React, { useState, useCallback } from 'react';
-// FIX: Changed useCoreUI to useAppCore
 import { useAppCore } from '../contexts/AppContext';
 import { FiltersPanel } from './alchemist/FiltersPanel';
 import { ResultsPanel } from './alchemist/ResultsPanel';
-// FIX: Imported SelectOption from types.ts
 import type { SelectOption } from '../types';
-// FIX: Imported AlchemistItem from types.ts
 import type { AlchemistItem } from '../types';
-// FIX: Added AI_MODELS to constants export
-import { AI_MODELS } from '../constants';
+// FIX: Use absolute import for constants
+import { AI_MODELS } from '@/constants';
 
 export interface AlchemistState {
     systemInstruction: string;
@@ -30,7 +27,6 @@ const initialAlchemistState: AlchemistState = {
 
 const AlchemistInterface: React.FC = () => {
     const { loadingState, setLoadingState, appError: error, setAppError: setError } = useAppCore();
-    // FIX: Use local state for history to avoid type conflicts with the shared AlchemyContext.
     const [history, setHistory] = useState<AlchemistItem[]>([]);
     const [filters, setFilters] = useState<AlchemistState>(initialAlchemistState);
 

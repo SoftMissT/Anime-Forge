@@ -1,88 +1,46 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <title>Kimetsu Forge - Gerador de RPG para Demon Slayer</title>
-
-    <!-- Otimizações de Carregamento -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preconnect" href="https://i.imgur.com" />
-    <link rel="preload" href="/src/styles/globals.css" as="style" />
-    <link rel="preload" href="https://i.imgur.com/M9BDKmO.png" as="image" />
-    <!-- Preload das primeiras imagens do carrossel para LCP -->
-    <link
-      rel="preload"
-      href="https://i.imgur.com/hJxdJ79.jpg"
-      as="image"
-      fetchpriority="high"
-    />
-    <link rel="preload" href="https://i.imgur.com/neCtaaD.jpg" as="image" />
-
-    <!-- SEO Básico -->
-    <meta
-      name="description"
-      content="Gerador de conteúdo RPG para Demon Slayer: armas, personagens, Onis, técnicas e mais. Forja lendas para suas campanhas de mesa."
-    />
-    <meta
-      name="keywords"
-      content="demon slayer, rpg, gerador, kimetsu no yaiba, mesa, ttrpg, ai"
-    />
-    <meta name="author" content="SoftMissT & Mathzin" />
-    <link rel="canonical" href="https://demon-slayer-gerador.vercel.app" />
-
-    <!-- Open Graph - Facebook/WhatsApp -->
-    <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://demon-slayer-gerador.vercel.app"
-    />
-    <meta
-      property="og:title"
-      content="Kimetsu Forge - Gerador de RPG para Demon Slayer"
-    />
-    <meta
-      property="og:description"
-      content="Crie armas lendárias, Onis épicos e personagens únicos para suas campanhas de Demon Slayer com IA."
-    />
-    <meta property="og:image" content="https://i.imgur.com/M9BDKmO.png" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta
-      name="twitter:url"
-      content="https://demon-slayer-gerador.vercel.app"
-    />
-    <meta name="twitter:title" content="Kimetsu Forge - Gerador de RPG" />
-    <meta
-      name="twitter:description"
-      content="Forje lendas para suas campanhas de Demon Slayer"
-    />
-    <meta name="twitter:image" content="https://i.imgur.com/M9BDKmO.png" />
-
-    <!-- Favicon Melhorado -->
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="32x32"
-      href="https://i.imgur.com/M9BDKmO.png"
-    />
-    <link
-      rel="apple-touch-icon"
-      href="https://i.imgur.com/M9BDKmO.png"
-    />
-
-    <!-- PWA & Mobile -->
-    <meta name="theme-color" content="#8b5cf6" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, maximum-scale=5"
-    />
-  </head>
+    <link rel="icon" type="image/svg+xml" href="https://i.imgur.com/M9BDKmO.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kimetsu Forge</title>
+    <meta name="description" content="Gerador de conteúdo RPG para Demon Slayer." />
+  <link rel="stylesheet" href="/index.css">
+</head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@^19.2.3",
+        "framer-motion": "https://esm.sh/framer-motion@^12.24.7",
+        "react/": "https://esm.sh/react@^19.2.3/",
+        "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@^2.89.0",
+        "@libsql/client": "https://esm.sh/@libsql/client@^0.15.15",
+        "googleapis": "https://esm.sh/googleapis@^169.0.0",
+        "@google/genai": "https://esm.sh/@google/genai@^1.34.0",
+        "iron-session": "https://esm.sh/iron-session@^8.0.4",
+        "next": "https://esm.sh/next@^16.1.1",
+        "buffer": "https://esm.sh/buffer@^6.0.3",
+        "crypto": "https://esm.sh/crypto@^1.0.1",
+        "iron-session/": "https://esm.sh/iron-session@^8.0.4/",
+        "uuid": "https://esm.sh/uuid@^13.0.0",
+        "next/": "https://esm.sh/next@^16.1.1/",
+        "@vercel/analytics/": "https://esm.sh/@vercel/analytics@^1.6.1/",
+        "@vercel/speed-insights/": "https://esm.sh/@vercel/speed-insights@^1.3.1/",
+        "openai": "https://esm.sh/openai@^6.15.0",
+        "canvas-confetti": "https://esm.sh/canvas-confetti@^1.9.4",
+        "vite": "https://esm.sh/vite@^7.3.0",
+        "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2",
+        "path": "https://esm.sh/path@^0.12.7",
+        "url": "https://esm.sh/url@^0.11.4",
+        "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
+      }
+    }
+    </script>
+  <script type="module" src="/index.tsx"></script>
 </body>
 </html>

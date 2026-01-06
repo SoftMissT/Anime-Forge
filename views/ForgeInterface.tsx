@@ -1,12 +1,11 @@
 import React, { useCallback, useState, useEffect } from 'react';
-// FIX: Changed useCoreUI to useAppCore
 import { useAppCore } from '../contexts/AppContext';
 import { useForge } from '../contexts/AppContext';
 import type { GeneratedItem, FilterState, Category } from '../types';
 import { FilterPanel } from '../components/FilterPanel';
 import { ResultsPanel } from './forge/ResultsPanel';
-// FIX: Added INITIAL_FILTER_STATE to constants export
-import { INITIAL_FILTER_STATE } from '../constants';
+// FIX: Use absolute import for constants
+import { INITIAL_FILTER_STATE } from '@/constants';
 
 interface ForgeInterfaceProps {
     initialCategory: Category;
@@ -14,7 +13,6 @@ interface ForgeInterfaceProps {
 }
 
 const ForgeInterface: React.FC<ForgeInterfaceProps> = ({ initialCategory, allowedCategories }) => {
-    // FIX: Destructure setLoadingState and setAppError correctly.
     const { loadingState, setLoadingState, appError: error, setAppError: setError } = useAppCore();
     const { history, addHistoryItem, toggleFavorite, setSelectedItem: openDetailModal } = useForge();
     const [filters, setFilters] = useState<FilterState>({...INITIAL_FILTER_STATE, category: initialCategory});
@@ -23,7 +21,6 @@ const ForgeInterface: React.FC<ForgeInterfaceProps> = ({ initialCategory, allowe
         setFilters(prev => ({...INITIAL_FILTER_STATE, category: initialCategory}));
     }, [initialCategory]);
     
-    // FIX: Added handler for FilterPanel's onFilterChange
     const handleFilterChange = <K extends keyof FilterState>(field: K, value: FilterState[K]) => {
         setFilters(prev => ({ ...prev, [field]: value }));
     };
@@ -59,7 +56,6 @@ const ForgeInterface: React.FC<ForgeInterfaceProps> = ({ initialCategory, allowe
 
             const newItems: GeneratedItem[] = results.map((item: any, index: number) => ({
                 id: `item-${Date.now()}-${index}`,
-                // FIX: Use correct properties for GeneratedItem type
                 nome: item.title,
                 descricao: item.description,
                 descricao_curta: item.description.substring(0, 100) + '...',
@@ -67,13 +63,11 @@ const ForgeInterface: React.FC<ForgeInterfaceProps> = ({ initialCategory, allowe
                 categoria: filters.category,
                 promptModifier: filters.promptModifier,
                 createdAt: new Date().toISOString(),
-                // Add dummy required fields
                 raridade: 'Comum',
                 nivel_sugerido: 1,
                 ganchos_narrativos: [],
             }));
 
-            // FIX: Use addHistoryItem from context instead of direct state setter
             newItems.reverse().forEach(item => addHistoryItem(item));
 
         } catch (e: any) {
@@ -93,7 +87,6 @@ const ForgeInterface: React.FC<ForgeInterfaceProps> = ({ initialCategory, allowe
             <aside className="w-full md:w-1/3 lg:w-1/4 h-full flex flex-col bg-bg-secondary border-r border-border-color overflow-y-auto">
                 <FilterPanel 
                     filters={filters}
-                    // FIX: Pass onFilterChange instead of setFilters
                     onFilterChange={handleFilterChange}
                     onGenerate={handleForge}
                     isLoading={loadingState.active}
@@ -102,7 +95,6 @@ const ForgeInterface: React.FC<ForgeInterfaceProps> = ({ initialCategory, allowe
                 />
             </aside>
             <ResultsPanel
-                // FIX: Use 'categoria' instead of 'category'
                 results={history.filter(item => allowedCategories ? allowedCategories.includes(item.categoria) : true)}
                 isLoading={loadingState.active}
                 error={error?.message || null}

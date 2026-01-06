@@ -1,8 +1,8 @@
-import React, { ErrorInfo, ReactNode } from 'react';
+import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertTriangleIcon } from './icons/AlertTriangleIcon';
 
 interface ErrorBoundaryProps {
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 interface State {
@@ -10,9 +10,8 @@ interface State {
   error?: Error;
 }
 
-class ErrorBoundary extends React.Component<ErrorBoundaryProps, State> {
-  // FIX: Using class property syntax to initialize state. This is a modern and standard approach for React class components and should resolve issues where the `state` property is not being found on the component instance.
-  state: State = {
+class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
+  public state: State = {
     hasError: false,
     error: undefined,
   };
